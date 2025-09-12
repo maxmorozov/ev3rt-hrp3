@@ -11,6 +11,7 @@
 //#define DEBUG
 
 #include <stdlib.h>
+#include <sys/types.h>
 
 #include <t_stddef.h>
 #include <t_syslog.h>
