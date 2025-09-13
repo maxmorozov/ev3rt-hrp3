@@ -1,0 +1,460 @@
+TOPPERS/HRP3 Kernel
+User’s Manual
+
+Supported Version: Release 3.1.0
+Last Updated: February 13, 2019
+
+This document explains the matters necessary to use the TOPPERS/HRP3 kernel.
+
+The TOPPERS/HRP3 kernel was developed as an extension of the TOPPERS/ASP3 kernel (hereafter ASP3
+kernel), and its usage is almost the same as that of the ASP3 kernel. At present, items that overlap
+with the ASP3 kernel’s user’s manual are not described in this manual. Therefore, when reading this
+manual, also refer to the ASP3 kernel’s manual.
+
+This document assumes that the TOPPERS Embedded Component System (TECS) is used only for building
+system services, and that application programs are written in the C language. For methods of
+constructing an entire system including application programs using TECS, please refer to the TECS
+Reference Manual at the following URL:
+
+http://dev.toppers.jp/trac_user/tecs/wiki/WikiStart
+
+----------------------------------------------------------------------
+TOPPERS/HRP Kernel
+    Toyohashi Open Platform for Embedded Real-Time Systems /
+    High Reliable system Profile Kernel
+
+Copyright (C) 2016–2018 by Embedded and Real-Time Systems Laboratory,
+            Graduate School of Information Science, Nagoya Univ., JAPAN
+
+The above copyright holders permit free use, reproduction, modification,
+and redistribution (hereafter “use”) of this software (including modified
+versions of this software, hereafter the same) provided that all of the
+following conditions (1)–(4) are met:
+
+(1) When using the software in source code form, the above copyright notice,
+    this usage condition, and the warranty disclaimer below must be included
+    verbatim in the source code.
+(2) When redistributing the software in a form usable for other software
+    development, such as in library form, the accompanying documents (such as
+    user manuals) must include the above copyright notice, this usage
+    condition, and the warranty disclaimer below.
+(3) When redistributing the software in a form not usable for other software
+    development, such as when embedding it into equipment, one of the following
+    conditions must be met:
+    (a) The accompanying documents (such as user manuals) must include the
+        above copyright notice, this usage condition, and the warranty
+        disclaimer below.
+    (b) The form of redistribution must be reported to the TOPPERS Project by
+        a separately specified method.
+(4) The above copyright holders and the TOPPERS Project are exempted from any
+    damages, direct or indirect, resulting from the use of this software. They
+    are also exempted from any claims from users or end users of this software
+    for any reason.
+
+This software is provided without warranty. The above copyright holders and
+the TOPPERS Project make no guarantees regarding this software, including
+fitness for a particular purpose. They are not liable for any damages, direct
+or indirect, arising from the use of this software.
+
+$Id: user.txt 669 2019-02-13 07:44:19Z ertl-hiro $
+----------------------------------------------------------------------
+
+Table of Contents
+
+1. Overview of TOPPERS/HRP3 Kernel
+    1.1 Positioning of TOPPERS/HRP3 Kernel
+    1.2 Specifications of TOPPERS/HRP3 Kernel
+2. Target-Dependent Part
+3. Quick Start Guide
+    3.1 Preparing the Development Environment
+    3.2 Manual Memory Placement
+    3.3 Removing Unused Service Calls
+4. Directory Structure and File Structure
+    4.1 Directory Structure of the Distribution Package
+    4.2 File Structure of the Target-Independent Part
+5. How to Use the Configuration Script
+6. How to Modify the Standard Makefile
+7. How to Use the Configurator
+8. System Services
+9. Support Libraries
+    9.1 prb_str Function
+10. Test Programs
+    10.1 Functional Test Programs
+    10.2 Test Programs Using the Timer Driver Simulator
+    10.3 Performance Evaluation Programs
+11. Notes and Tips for Usage
+    11.1 Checking Memory Allocation Results
+    11.2 Protection of User Stack Area
+    11.3 Defining Memory Map in the Target-Dependent Part
+    11.4 Function Codes for Extended Service Calls
+    11.5 Sharing Stack Areas Among Tasks
+    11.6 Restrictions on System Service Calls
+    11.7 System Log Output from the Kernel
+12. Reference Information
+13. Reference
+    13.1 List of Service Calls
+    13.2 List of Static APIs
+    13.3 Version History
+
+
+1. Overview of the TOPPERS/HRP3 Kernel
+
+1.1 Positioning of the TOPPERS/HRP3 Kernel
+
+The TOPPERS/HRP3 kernel (hereinafter referred to as the HRP3 kernel) is a real-time kernel that adds
+protection features such as memory protection and time partitioning to the TOPPERS/ASP3 kernel. It
+can also be considered an extension and improvement of the TOPPERS/HRP kernel and the HRP2 kernel.
+
+1.2 TOPPERS/HRP3 Kernel Specifications
+
+The HRP3 kernel specification adds the following features to the ASP3 kernel:
+
+    Memory protection function
+    Time partitioning function
+    Object access protection function
+    Extended service call function
+    Message buffer function (supported by the ASP3 kernel via an extension package)
+
+For details on the specifications of the TOPPERS 3rd Generation Kernel (ITRON-based), including the
+HRP3 kernel, please refer to the "TOPPERS 3rd Generation Kernel (ITRON-based) Integrated
+Specification (Release 3.2.0)," distributed as a separate PDF file.
+
+For target definition items within the kernel specification, refer to the target-specific section
+user's manual in the target-specific section directory.
+
+2. Target-specific Section
+
+The structure of the target-specific section of the HRP3 kernel is the same as that of the ASP kernel.
+    
+3. Quick Start Guide
+
+The procedure for building and running sample programs on the HRP3 kernel is almost identical to
+that of the ASP3 kernel. The following explains only the differences from the ASP3 kernel procedure.
+
+3.1 Preparing the Development Environment
+
+Please note that the TOPPERS Embedded Component System (TECS) Generator does not work with versions
+prior to 1.5.0.
+
+The HRP3 kernel uses memory manipulation functions (specifically, memcpy and memset) included in the
+standard C library. The compiler may also generate code that calls standard C library functions.
+Therefore, a standard C library for the target system is required. Instead of preparing a standard C
+library, you can prepare only the necessary functions yourself.
+
+3.2 Manual Memory Allocation
+
+The HRP3 kernel performs automatic memory allocation by default (although the target-dependent
+portion may not support automatic memory allocation). When using automatic memory allocation, the
+procedure for building and running the sample program is the same as for the ASP3 kernel.
+
+Manual memory allocation is also possible in the HRP3 kernel if the target-dependent portion
+supports it. When using manual memory allocation, the procedure for building and running the sample
+program differs from the procedure for the ASP kernel in the following ways.
+
+(1) Modifying the Makefile Template
+
+When using manual memory allocation, you must use the manual memory allocation Makefile template
+(Makefile_mml). Specifically, add "-m ../sample/Makefile_mml" to the configure.rb startup options to
+change the Makefile template to one for manual memory allocation.
+
+(2) Determining the Memory Layout and Creating a Linker Script
+
+Decide the memory layout for running the sample program. Specifically, determine the addresses for
+each protection domain (kernel domain, user domain DOM1, user domain DOM2) and each unassigned
+section. Also, create a linker script (the default file name is ldscript.ld) that will allocate each
+section to the determined addresses.
+
+(3) Creating Initialization for the Data and BSS Sections
+
+Create a data structure or function to initialize the data and bss sections of the sample program.
+If you use functions provided by the HRP3 kernel to initialize these sections, prepare the following
+data structure:
+
+    const uint_t _kernel_tnum_datasec
+    const DATASECINIB _kernel_datasecinib_table[]
+    const uint_t _kernel_tnum_bsssec
+    const BSSSECINIB _kernel_bsssecinib_table[]
+
+Instead of providing these data structures, you can compile the kernel with the
+OMIT_INITIALIZE_SECTIONS macro defined and provide your own initialize_sections function to
+initialize these sections (or modify the sample program so that it does not rely on the
+initialization of the data and bss sections).
+
+3.3 Removing Unused Service Calls
+
+The default setting for the HRP3 kernel links in the processing code for all service calls,
+regardless of whether they are used or not. To avoid linking unused service call processing code,
+you need to include a statement to that effect in omit_svc.h, which is created in the directory
+where the object file is located. Specifically, to avoid linking the sus_tsk and rsm_tsk processing
+code, include the following statement in omit_svc.h:
+
+#define _kernel_sus_tsk no_support
+#define _kernel_rsm_tsk no_support
+
+In addition, to avoid linking unused processing code on a function-by-function basis, you need to
+organize the kernel into a library on a function-by-function basis. For information on how to do
+this, see section "3.4 How to Organize the Kernel into a Library on a Function-by-Function Basis" in
+the ASP3 Kernel User's Manual.
+
+4. Directory and File Structure
+
+4.1 Distribution Package Directory Structure
+
+    doc/            Documentation
+    include/        Application header files
+    kernel/         Kernel source files
+    tecs_kernel/    Source files for calling the kernel from TECS
+    syssvc/         System service header and source files
+    library/        Support library source files
+    target/         Target-dependent sections
+    arch/           Common sections of target-dependent sections
+        gcc/        GCC development environment-dependent sections
+        tracelog/   Trace log recording sample code
+    cfg/            Configurator
+        doc/        Configurator documentation
+    utils/          Utility programs
+    sample/         Sample programs and Makefiles
+    test/           Test programs
+    extension/      Extension packages
+
+4.2 Target-Independent Section File Structure
+
+The following is an overview of each file in the target-independent section (excluding test programs
+and extension packages).
+
+    README.txt          A brief introduction to the TOPPERS/HRP3 kernel
+    configure.rb        Configuration script (for the GNU development environment)
+    MANIFEST            List of files for individual packages
+
+  doc/
+    user.txt            User's manual
+    porting.txt         Target-dependent porting guide
+    hrp3_design_log.txt Design notes
+    version.txt         Change history
+
+  include/
+    kernel.h        Definitions for using the HRP3 kernel
+    kernel_fncode.h Service call function code definitions
+    svc_call.h      Service call invocation definitions
+    sil.h           System interface layer definitions
+    t_stddef.h      TOPPERS common header file
+    itron.h         Data types, constants, and macros common to the ITRON specification
+    extsvc_fncode.h Extended service call function code definitions
+    t_syslog.h      System log output definitions
+    t_stdlib.h      Basic library function definitions
+    queue.h         Queue operation library definitions
+    log_output.h    Definitions for using formatted system log output
+
+  kernel/
+    Makefile.kernel     Kernel file structure definition
+    svc.def             Service call definition file
+    kernel_impl.h       Standard header file for kernel implementation
+    kernel_int.h        Header file for kernel_cfg.c
+    kernel_rename.def   Renaming definition for kernel internal identifiers
+    kernel_rename.h     Renaming kernel internal identifiers
+    kernel_unrename.h   Unrenaming kernel internal identifiers
+    kernel_api.def      Configurator static API table
+    kernel_api_mml.def  Configurator static API table (manual memory allocation)
+    kernel_sym.def      Configurator value acquisition symbol table
+    kernel.trb          Configurator pass 2 generation script
+    kernel_opt.trb      Configurator pass 3 generation script
+    kernel_mem.trb      Configurator pass 4 generation script
+    kernel_check.trb    Configurator check pass generation script
+    kernel_lib.trb      Library functions for the generation script
+    genoffset.trb       Generation script for offset file generation
+    allfunc.h           Definitions for compiling all functions
+    check.h             Macros for error checking
+    startup.c           Kernel initialization and termination processing
+    domain.h            Definitions related to the protection domain management module
+    domain.c            Protection domain management module
+    domain.trb          Script for generating the protection domain management module
+    domain_prep.trb     Preprocessing related to protection domains
+    task.h              Definitions related to the task management module
+    task.c              Task management module
+    task.trb            Script for generating the task management module
+    taskhook.h          Definitions related to hook routines related to task management
+    taskhook.c          Hook routines related to task management
+    wait.h              Definitions related to the wait state management module
+    wait.c              Wait state management module
+    time_event.h        Definitions related to the time event management module
+    time_event.c        Time event management
+    memory.h            Definitions related to the memory object management module
+    memory.c            Memory object management module
+    memory.trb          Script for generating the memory object management module
+    memory_prep.trb     Preprocessing related to memory objects
+    svc_table.c         Table of service call processing routines
+    task_manage.c       Task management functions
+    task_refer.c        Task state reference function
+    task_sync.c         Task-specific synchronization function
+    task_term.c         Task termination function
+    semaphore.h         Semaphore function-related definitions
+    semaphore.c         Semaphore function
+    semaphore.trb       Semaphore function generation script
+    eventflag.h         Event flag function-related definitions
+    eventflag.c         Event flag function
+    eventflag.trb       Event flag function generation script
+    dataqueue.h         Data queue function-related definitions
+    dataqueue.c         Data queue function
+    dataqueue.trb       Data queue function generation script
+    pridataq.h          Priority data queue function-related definitions
+    pridataq.c          Priority data queue function
+    pridataq.trb        Priority data queue function generation script
+    mutex.h             Mutex function-related definitions
+    mutex.c             Mutex function
+    mutex.trb           Mutex function generation script
+    messagebuf.h        Message buffer function-related definitions
+    messagebuf.c        Message buffer function
+    messagebuf.trb      Message buffer function generation script
+    mempfix.h           Fixed-size memory pool function-related definitions
+    mempfix.c           Fixed-size memory pool function
+    mempfix.trb         Fixed-size memory pool function generation script
+    time_manage.c       System time management function
+    cyclic.h            Cyclic notification function-related definitions
+    cyclic.c            Cyclic notification function
+    cyclic.trb          Cyclic notification function generation script
+    alarm.h             Alarm notification function-related definitions
+    alarm.c             Alarm notification function
+    alarm.trb           Alarm notification function generation script
+    sys_manage.c        System state management function
+    mem_manage.c        Memory object management function
+    interrupt.h         Interrupt management function-related definitions
+    interrupt.c         Interrupt management function
+    interrupt.trb       Interrupt management function generation script
+    exception.h         CPU exception management function-related definitions
+    exception.c         CPU exception management function
+    exception.trb       CPU exception management function generation script
+    svc_manage.h        Extended service call management function-related definitions
+    svc_manage.trb      Extended service call management function generation script
+
+  tecs_kernel/
+    kernel.cdl                      Kernel object component description file
+    tecs_kernel.h                   Header file for kernel object component
+    init_tecs.c                     TECS initialization
+    tKernel_inline.h                Inline functions for kernel operations
+    tTask.c                         Task operations
+    tTask_inline.h                  Inline functions for task operations
+    tSemaphore_inline.h             Inline functions for semaphore operations
+    tEventflag_inline.h             Inline functions for event flag operations
+    tDataqueue_inline.h             Inline functions for data queue operations
+    tPriorityDataqueue_inline.h     Inline functions for priority data queue operations
+    tMutex_inline.h                 Inline functions for mutex operations
+    tMessageBuffer_inline.h         Inline functions for message buffer operations
+    tFixedSizeMemoryPool_inline.h   Inline functions for fixed-size memory pool operations
+    tCyclicNotifier.c               Cyclic notification operations
+    tCyclicNotifier_inline.h        Inline function for cyclic notification operations
+    tAlarmNotifier.c                Alarm notification operations
+    tAlarmNotifier_inline.h         Inline function for alarm notification operations
+    tInterruptRequest_inline.h      Inline function for interrupt request line operations
+    tISR.c                          Interrupt service routine operations
+    tInitializeRoutine.c            Initialization routine operations
+    tTerminateRoutine.c             Termination routine operations
+
+  syssvc/
+    syslog.h                Definitions for using the system log function
+    tSysLog.cdl             System log function component description file
+    tSysLog.c               System log function
+    tSysLogAdapter.cdl      System log function adapter component description file
+    tSysLogAdapter.c        System log function adapter
+    serial.h                Definitions for using the serial interface driver
+    tSerialPort.cdl         Serial interface driver component description file
+    tSerialPortMain.c       Serial interface driver main body
+    tSerialAdapter.cdl      Serial interface driver adapter component description file
+    tSerialAdapter.c        Serial interface driver adapter
+    tLogTask.cdl            System log task component description file
+    tLogTaskMain.c          System log task main body
+    test_svc.h              Definition for using the test program service
+    tTestService.cdl        Test program service component description file
+    tTestService.c          Test program service
+    tTestServiceAdapter.cdl Test program service adapter component description file
+    tTestServiceAdapter.c   Test program service adapter
+    histogram.h             Definition for using the execution time distribution aggregation service
+    tHistogram.cdl          Execution time distribution aggregation service component description file
+    tHistogram.h            Execution time distribution aggregation service header file
+    tHistogram.c            Execution time distribution aggregation service
+    tHistogramAdapter.cdl   Component description file for the adapter for the execution time distribution aggregation service
+    tHistogramAdapter.c     Component description file for the adapter for the execution time distribution aggregation service
+    tBanner.cdl             Component description file for kernel startup message output
+    tBannerMain.c           Main body of kernel startup message output
+
+  library/
+    log_output.c    Formatted output of system log
+    prb_str.c       String access rights check
+    strerror.c      Function returning error message string
+    t_perror.c      Error message output
+    vasyslog.c      System log library with variable number of arguments
+
+  arch/gcc/
+    tool_stddef.h   Development environment-dependent portion of t_stddef.h (for GCC)
+    tool_svc.h      Development environment-dependent portion of service call invocation via software interrupt (for GCC)
+    ldscript.trb    Linker script generation script (for GCC)
+
+  arch/tracelog/
+    trace_log.h     Trace log settings
+    tTraceLog.cdl   Trace log function component description file
+    tTraceLog.c     Trace log function
+
+  cfg/
+    MANIFEST        Individual package file list
+    cfg.rb          Configurator body
+    pass1.rb        Configurator pass 1 processing
+    pass2.rb        Configurator pass 2 processing
+    GenFile.rb      GenFile class definition
+    SRecord.rb      SRecord class definition
+
+  cfg/doc/
+    cfg_user.txt    Configurator
+
+5. How to Use the Configuration Script
+
+The HRP3 kernel configuration script (configure.rb) is the same as that for the ASP3 kernel.
+
+6. How to Modify the Makefile
+
+The method for modifying the Makefile for the HRP3 kernel is almost the same as that for the ASP3
+kernel. Below, we will only explain the differences from the ASP3 kernel method.
+
+6.1 Makefile Variable Definitions
+
+The standard Makefile for the HRP3 kernel assumes that system services are executed in processing
+units belonging to the kernel domain, and adds an option to define the TOPPERS_SVC_CALL macro in the
+system service compilation options (SYSSVC_CFLAGS).
+
+6.2 Compilation Options
+
+When using manual memory allocation, define the TOPPERS_ML_MANUAL macro. The manual memory
+allocation Makefile template (Makefile_mml) defines this macro as a compilation option.
+
+If the data section does not need to be initialized, you can omit the data section initialization
+process by defining the OMIT_IDATA macro. There are two cases in which data section initialization
+is not necessary:
+
+  - When loading a program (including the data area) from storage into memory. In such cases, it is
+    straightforward to set the standard ROM region and the standard RAM region to the same memory
+    region. In this case, define the OMIT_IDATA macro to disable data section initialization.
+
+    However, since the data section is overwritten when the program is executed, if the data section
+    initialization is disabled, the program cannot be executed multiple times after loading (in
+    other words, it must be loaded each time it is executed). To enable multiple executions with a
+    single load, you can divide memory into a region considered ROM and a region considered RAM, and
+    initialize the data section using the standard ROM region and standard RAM region as separate
+    memory regions (without defining the OMIT_IDATA macro).
+
+  - The application is designed not to rely on data section initialization. More specifically, it does
+    not use a function that initializes static variables (to anything other than 0).
+
+Compiling with the OMIT_CHECK_USTACK_OVERLAP macro definition allows multiple tasks to share user
+stack space. For details, see section "11.5 Sharing Stack Space Between Tasks."
+
+The HRP3 kernel uses the standard C library, so specifying the -DTOPPERS_USE_STDLIB compile option
+is meaningless.
+
+7. How to Use the Configurator
+
+As described in section "2.12.5 Configurator Processing Model" of the "TOPPERS Third Generation
+Kernel (ITRON-based) Integrated Specification," the configurator (cfg) processing consists of four
+passes for automatic memory allocation and three passes for manual memory allocation (three passes
+for the ASP3 kernel).
+
+The configurator used is the same as that used in the ASP3 kernel, and usage of the configurator
+with the HRP3 kernel is almost identical to that of the ASP3 kernel.
+In the following, we will only explain the differences from usage with the ASP3 kernel.
