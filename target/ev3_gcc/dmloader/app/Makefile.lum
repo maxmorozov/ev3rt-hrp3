@@ -50,7 +50,7 @@ CFG_OUT_SRCS := module_cfg.h module_cfg.c
 $(CFG_OUT_SRCS): $(MODCFG)
 	$(call print_cmd, "CFG[1]", $@)
 	@$(CFG) --pass 1 --kernel hrp $(INCLUDES) $(CFG_TABS) $<
-	@$(CFGLINK) $(CFLAGS) -Wl,-e,0 -o cfg1_out.o cfg1_out.c
+	@$(CFGLINK) $(CFLAGS) -Wl,-e,0 -r -o cfg1_out.o cfg1_out.c
 	@$(CFGLINK) $(CFLAGS) $(CFG1_OUT_LDFLAGS) -Wl,-e,0 -o $(CFG1_OUT) cfg1_out.o
 	@$(NM) -n $(CFG1_OUT) > cfg1_out.syms
 	@$(OBJCOPY) -O srec -S $(CFG1_OUT) cfg1_out.srec
