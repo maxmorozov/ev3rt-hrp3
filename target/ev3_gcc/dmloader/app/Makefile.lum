@@ -75,7 +75,7 @@ LINK = arm-none-eabi-gcc -Wl,-nmagic -nostdlib -pie
 LDSCRIPT = $(LOADERDIR)/app/app.ld
 
 #
-#  共通コンパイルオプションの定義
+#  Common compilation option definitions
 #
 ifdef TEXT_START_ADDRESS
   LDFLAGS := $(LDFLAGS) -Wl,-Ttext,$(TEXT_START_ADDRESS)

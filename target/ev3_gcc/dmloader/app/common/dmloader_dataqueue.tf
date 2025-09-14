@@ -21,21 +21,21 @@ $IF !EQ(DTQ.DOMAIN[id], "") && !EQ(DTQ.DOMAIN[id], "TDOM_APP")$
     $END$   
 $END$
 
-$	// dtqatrが（［TA_TPRI］）でない場合（E_RSATR）
+$	// If dtqatr is not ([TA_TPRI]) (E_RSATR)
 $IF (DTQ.DTQATR[id] & ~TA_TPRI) != 0$
 	$ERROR DTQ.TEXT_LINE[id]$E_RSATR:
         $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "dtqatr", DTQ.DTQATR[id], id, "CRE_DTQ")$
     $END$
 $END$
 
-$	// dtqcntが負の場合（E_PAR）
+$	// dtqcnt is negative (E_PAR)
 $IF DTQ.DTQCNT[id] < 0$
 	$ERROR DTQ.TEXT_LINE[id]$E_PAR:
         $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "dtqcnt", DTQ.DTQCNT[id], id, "CRE_DTQ")$
     $END$
 $END$
 
-$	// dtqmbがNULLでない場合（E_NOSPT）
+$	// dtqmb is not NULL (E_NOSPT)
 $IF !EQ(DTQ.DTQMB[id], "NULL")$
 	$ERROR DTQ.TEXT_LINE[id]$E_NOSPT:
         $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "dtqmb", DTQ.DTQMB[id], id, "CRE_DTQ")$

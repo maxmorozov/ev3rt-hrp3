@@ -16,24 +16,24 @@ $cfgData[:CRE_PDQ].each{|_, params|
     error_ercd("E_NOSPT", params, "PDQ must belong to TDOM_APP in dynamic loading mode")
   end
 
-  # pdqatrが無効の場合（E_RSATR）［NGKI1804］［NGKI1795］
-  #（TA_TPRI以外のビットがセットされている場合）
+  # When pdqatr is invalid (E_RSATR) [NGKI1804] [NGKI1795]
+  #(If any bit other than TA_TPRI is set)
   if (params[:pdqatr] & ~($TA_TPRI)) != 0
     error_illegal_id("E_RSATR", params, :pdqatr, :pdqid)
   end
 
-  # maxdpriが有効範囲外の場合（E_PAR）［NGKI1819］
-  #（TMIN_DPRI <= maxdpri && maxdpri <= TMAX_DPRIでない場合）
+  # When maxdpri is out of the valid range (E_PAR) [NGKI1819]
+  #(unless TMIN_DPRI <= maxdpri && maxdpri <= TMAX_DPRI)
   if !($TMIN_DPRI <= params[:maxdpri] && params[:maxdpri] <= $TMAX_DPRI)
     error_illegal_id("E_PAR", params, :maxdpri, :pdqid)
   end
 
-  # pdqmbがNULLでない場合（E_NOSPT）［HRPS0127］
+  # If pdqmb is not NULL (E_NOSPT) [HRPS0127]
   if params[:pdqmb] != "NULL"
     error_illegal_id("E_NOSPT", params, :pdqmb, :pdqid)
   end
 
-  # pdqcntが負の場合（E_PAR）
+  # If pdqcnt is negative (E_PAR)
   if params[:pdqcnt] < 0
     error_illegal_id("E_PAR", params, :pdqcnt, :pdqid)
   end

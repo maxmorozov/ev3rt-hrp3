@@ -5,9 +5,9 @@ typedef struct {
 } MOD_CFG_ENTRY;
 
 typedef struct {
-	ATR			cycatr;		/* 周期通知属性 */
-	RELTIM		cyctim;		/* 周期通知の通知周期 */
-	RELTIM		cycphs;		/* 周期通知の通知位相 */
+	ATR			cycatr;		/* Periodic notification attribute */
+	RELTIM		cyctim;		/* Notification cycle for periodic notifications */
+	RELTIM		cycphs;		/* Periodic notification phase */
     MODE        nfymode;
     intptr_t    par1;
     intptr_t    par2;
