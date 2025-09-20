@@ -340,10 +340,9 @@ if $TOPPERS_ML_AUTO
   $maxNumPageTable = 0
   prev_limitsec = 0
   $cfgData[:ATT_REG].sort_by {|_, params| params[:base].val}.each \
-														do |_, params|
+  do |_, params|
     basesec = params[:base] / $ARM_SECTION_SIZE
-    limitsec = (params[:base] + params[:size] + $ARM_SECTION_SIZE - 1) \
-													/ $ARM_SECTION_SIZE
+    limitsec = (params[:base] + params[:size] + $ARM_SECTION_SIZE - 1) / $ARM_SECTION_SIZE
     if prev_limitsec < basesec
       $maxNumPageTable += (limitsec - basesec)
     else

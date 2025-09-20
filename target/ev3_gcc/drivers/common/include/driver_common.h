@@ -20,7 +20,9 @@
  * Types
  */
 typedef uint8_t  u8;
-typedef bool_t   bool;
+#if !defined(__cplusplus) && defined(__STDC_VERSION__) && __STDC_VERSION__ < 202311L
+  typedef bool_t   bool;
+#endif
 typedef uint64_t loff_t;
 struct file;
 struct inode;

@@ -50,7 +50,7 @@ CFG_OUT_SRCS := module_cfg.h module_cfg.c
 $(CFG_OUT_SRCS): $(MODCFG)
 	$(call print_cmd, "CFG[1]", $@)
 	@$(CFG) --pass 1 --kernel hrp $(INCLUDES) $(CFG_TABS) $<
-	@$(CFGLINK) $(CFLAGS) -Wl,-e,0 -o cfg1_out.o cfg1_out.c
+	@$(CFGLINK) $(CFLAGS) -Wl,-e,0 -r -o cfg1_out.o cfg1_out.c
 	@$(CFGLINK) $(CFLAGS) $(CFG1_OUT_LDFLAGS) -Wl,-e,0 -o $(CFG1_OUT) cfg1_out.o
 	@$(NM) -n $(CFG1_OUT) > cfg1_out.syms
 	@$(OBJCOPY) -O srec -S $(CFG1_OUT) cfg1_out.srec
@@ -64,8 +64,8 @@ CLEAN_FILES += $(CFG1_OUT) cfg1_out.o cfg1_out.c cfg1_out.syms cfg1_out.srec $(C
 #CC = arm-none-eabi-gcc -fPIC -nostdlib -std=c99 -nostartfiles -fno-strict-aliasing -mcpu=arm926ej-s -mlittle-endian -D__TARGET_ARCH_ARM=5
 #LINK = arm-none-eabi-ld -nostdlib -nostartfiles
 #CC = arm-none-eabi-gcc -shared -fPIC -nostdlib -std=c99 -fno-strict-aliasing -mcpu=arm926ej-s -mlittle-endian -D__TARGET_ARCH_ARM=5
-CC = arm-none-eabi-gcc -fPIC -mno-pic-data-is-text-relative -nostdlib -std=gnu99 -fno-strict-aliasing -mcpu=arm926ej-s -mlittle-endian -D__TARGET_ARCH_ARM=5
-CXX = arm-none-eabi-g++ -fPIC -mno-pic-data-is-text-relative -nostdlib -std=gnu++11 -fno-strict-aliasing -mcpu=arm926ej-s -mlittle-endian -D__TARGET_ARCH_ARM=5
+CC = arm-none-eabi-gcc -fPIC -mno-pic-data-is-text-relative -nostdlib -std=gnu99 -fno-strict-aliasing -mcpu=arm926ej-s -mlittle-endian -D__TARGET_ARCH_ARM=5 -save-temps -fverbose-asm
+CXX = arm-none-eabi-g++ -fPIC -mno-pic-data-is-text-relative -nostdlib -std=gnu++14 -fno-strict-aliasing -mcpu=arm926ej-s -mlittle-endian -D__TARGET_ARCH_ARM=5 -save-temps -fverbose-asm
 #LINK = arm-none-eabi-ld -nostdlib -shared -fPIC
 
 # -n to make file size small
