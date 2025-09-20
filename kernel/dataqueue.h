@@ -52,10 +52,10 @@
 #include "wait.h"
 
 /*
- *  データ管理ブロック
+ *  Data Management Block
  */
 typedef struct data_management_block {
-	intptr_t	data;			/* データ本体 */
+	intptr_t	data;			/* Data body */
 } DTQMB;
 
 /*

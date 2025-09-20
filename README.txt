@@ -1,52 +1,46 @@
-
-	TOPPERS/HRP3 Kernel（Release 3.0）
-		Toyohashi Open Platform for Embedded Real-Time Systems/
+    TOPPERS/HRP3 Kernel (Release 3.0)
+    	Toyohashi Open Platform for Embedded Real-Time Systems/
 		High Reliable system Profile Kernel
 
-TOPPERS/HRP3カーネル（TOPPERS/HRPカーネル Release 3.X．以下，HRP3カーネ
-ル）は，TOPPERS/ASP3カーネルに対してメモリ保護や時間パーティショニング
-機能などの保護機能を追加したリアルタイムカーネルです．TOPPERS/HRPカーネ
-ルおよびHRP2カーネルに対して，拡張・改良を加えたものという位置付けもあ
-ります．
+The TOPPERS/HRP3 kernel (TOPPERS/HRP kernel Release 3.X, hereafter referred to as the HRP3 kernel)
+is a real-time kernel that adds protection features such as memory protection and time partitioning
+to the TOPPERS/ASP3 kernel. It can also be considered an extension and improvement of the
+TOPPERS/HRP kernel and the HRP2 kernel.
 
-【最初に読むべきドキュメント】
+[Documents to Read First]
 
-HRP3カーネルのユーザーズマニュアルがdoc/user.txtにあります．HRP3カーネ
-ルを使用する場合には，まずはこのドキュメントをお読み下さい．
+The HRP3 kernel user's manual is located in doc/user.txt. Please read this document first if you are
+using the HRP3 kernel.
 
-【ファイルの閲覧にあたって】
+[File Viewing]
 
-HRP3カーネルのドキュメント（プレーンテキストファイル）およびソースファ
-イルを読む際には，TABを4に設定してください．
+When reading the HRP3 kernel documentation (plain text files) and source files, please set the tab key to 4.
 
-【利用条件】
+[Terms of Use]
 
-HRP3カーネルの利用条件は，各ファイルの先頭に表示されているTOPPERSライセ
-ンスです．TOPPERSライセンスに関するFAQが，以下のページにあります．
+The terms of use for the HRP3 kernel are the TOPPERS License, which is displayed at the beginning of
+each file. A FAQ regarding the TOPPERS License can be found on the following page:
 
-	http://www.toppers.jp/faq/faq_ct12.html
+http://www.toppers.jp/faq/faq_ct12.html
 
-【質問・バグレポート・意見等の送付先】
+[Where to Send Questions, Bug Reports, and Comments]
 
-HRP3カーネルをより良いものにするためのご意見等を歓迎します．HRP3カーネ
-ルに関する質問やバグレポート，ご意見等は，TOPPERSプロジェクトの会員は
-TOPPERS開発者メーリングリスト（dev@toppers.jp）宛またはHRP3カーネルのバ
-グトラッキングシステム（Trac）に，その他の方はTOPPERSユーザーズメーリン
-グリスト（users@toppers.jp）宛にお願いします．
+We welcome your comments and suggestions for improving the HRP3 kernel. For questions, bug reports,
+and comments regarding the HRP3 kernel, TOPPERS Project members should send them to the TOPPERS
+Developer Mailing List (dev@toppers.jp) or the HRP3 Kernel Bug Tracking System (Trac). All other
+users should send them to the TOPPERS Users Mailing List (users@toppers.jp).
 
-これらのメーリングリストに投稿されたメールは，ウェブサイトのメーリング
-リストアーカイブから読むことができますので，公開すべきでない情報（個人
-情報など）をメール中に含めないように注意をお願いします．
+Emails posted to these mailing lists can be read in the mailing list archives on the website. Please
+be careful not to include any confidential information (such as personal information) in your
+emails.
 
-TOPPERSユーザーズメーリングリストへの登録方法については，以下のページに
-説明があります．
+Instructions for registering for the TOPPERS Users Mailing List can be found on the following page.
 
-	http://www.toppers.jp/community.html
+http://www.toppers.jp/community.html
 
-【ポーティングにあたって】
+[Porting Considerations]
 
-HRP3カーネルを，TOPPERSプロジェクトからオープンソースにすることを前提に，
-未サポートのターゲットにポーティングされる場合には，あらかじめご相談く
-ださると幸いです．
+Assuming that the HRP3 kernel will be open-sourced by the TOPPERS project,
+if you are porting to an unsupported target, we would appreciate your consultation in advance.
 
-以上
+That's all.

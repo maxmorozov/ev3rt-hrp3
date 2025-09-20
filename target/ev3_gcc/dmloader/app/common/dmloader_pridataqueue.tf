@@ -21,28 +21,28 @@ $IF !EQ(PDQ.DOMAIN[id], "") && !EQ(PDQ.DOMAIN[id], "TDOM_APP")$
     $END$   
 $END$
 
-$	// pdqatrが（［TA_TPRI］）でない場合（E_RSATR）
+$	// If pdqatr is not ([TA_TPRI]) (E_RSATR)
 $IF (PDQ.PDQATR[id] & ~TA_TPRI) != 0$
 	$ERROR PDQ.TEXT_LINE[id]$E_RSATR:
         $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "pdqatr", PDQ.PDQATR[id], id, "CRE_PDQ")$
     $END$
 $END$
 
-$	// pdqcntが負の場合（E_PAR）
+$	// If pdqcnt is negative (E_PAR)
 $IF PDQ.PDQCNT[id] < 0$
 	$ERROR PDQ.TEXT_LINE[id]$E_PAR:
         $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "pdqcnt", PDQ.PDQCNT[id], id, "CRE_PDQ")$
     $END$
 $END$
 
-$	// (TMIN_DPRI <= maxdpri && maxdpri <= TMAX_DPRI)でない場合（E_PAR）
+$	// If not (TMIN_DPRI <= maxdpri && maxdpri <= TMAX_DPRI) (E_PAR)
 $IF !(TMIN_DPRI <= PDQ.MAXDPRI[id] && PDQ.MAXDPRI[id] <= TMAX_DPRI)$
 	$ERROR PDQ.TEXT_LINE[id]$E_PAR:
         $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "maxdpri", PDQ.MAXDPRI[id], id, "CRE_PDQ")$
     $END$
 $END$
 
-$	// pdqmbがNULLでない場合（E_NOSPT）
+$	// pdqmb is not NULL (E_NOSPT)
 $IF !EQ(PDQ.PDQMB[id], "NULL")$
 	$ERROR PDQ.TEXT_LINE[id]$E_NOSPT:
         $FORMAT(_("illegal %1% `%2%\' of `%3%\' in %4%"), "pdqmb", PDQ.PDQMB[id], id, "CRE_PDQ")$

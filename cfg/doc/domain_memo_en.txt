@@ -1,0 +1,80 @@
+TOPPERS Confidential
+TOPPERS Project Design Memo
+Handling of Protection Domains in the Configurator
+
+Author: Hiroaki Takada (Nagoya University)
+Last updated: May 18, 2018
+
+○ Position of this memo
+
+This memo examines how protection domains are handled in the configurator for the 3rd generation TOPPERS kernel.
+
+○ Assignment of Protection Domain IDs
+
+Unlike other objects, protection domain ID numbers are assigned in Pass 1. 
+This is because, in integer constant expression parameters of the static API (specifically access
+permission patterns), it is necessary to refer to the protection domain name 
+(for example, "TACP(DOM1)").
+
+In Pass 1, it is not possible to determine whether the description of the protection domain will be
+excluded by conditional directives. Therefore, for protection domains described in the system
+configuration file, ID numbers are assigned regardless of conditional directives.
+As a result, the limit on the number of user domains (32 or fewer in the 3rd generation TOPPERS
+kernel) is applied even to those that were intended to be excluded by conditional directives.
+
+The protection domain IDs assigned in Pass 1 are written into $domainId and passed to Pass 2 via cfg1_out.db. 
+$domainId is a hash that maps protection domain names to their numeric IDs.
+
+Since static API parameters refer to protection domain names, Pass 1 also generates definitions
+(#define) for protection domain IDs inside cfg1_out.c.
+
+In Pass 1, by specifying an ID number input file with the --id-input-file option, protection domain
+ID assignments can be read from a file.
+
+○ Storage in Domain Data ($domData)
+
+● Information on Protection Domains
+
+In Pass 2, the information in $domainId passed from Pass 1 is stored in the domain data ($domData). 
+Specifically, $domData is a two-level hash (hash of hashes), with the following structure:
+
+$domData uses the protection domain ID value as a key, and parameter information as the value. 
+At the point when it is passed to the generation script, the parameter information only contains
+:domid, which holds a NumStr object with the domain name and domain ID value.
+
+For example, when two domains DOM1 and DOM2 are described and assigned ID numbers 1 and 2, $domData
+will contain the following:
+
+----------------------------------------
+{-1=>{:domid=>NumStr(-1,"TDOM_KERNEL")},
+ -2=>{:domid=>NumStr(-2,"TDOM_NONE")},
+ 1=>{:domid=>NumStr(1,"DOM1")},
+ 2=>{:domid=>NumStr(2,"DOM2")}}
+----------------------------------------
+
+As shown in this example, $domData also registers the kernel domain (key -1) and “no affiliation” (key -2). 
+Note that entries are not necessarily sorted in order of protection domain ID.
+
+Since the HRP3 kernel generation script often needs to handle only user domains, the script stores a
+list (array) of user protection domain IDs in $udomainList.
+$udomainList is sorted in ascending order of protection domain IDs.
+
+Note that $domainId is not passed after Pass 2.
+
+● Information on the Protection Domain to which a Static API Belongs
+
+If a static API is written inside a protection domain block, in Pass 2 the parameter information of
+that API will include a :domain key, storing the numeric ID of the domain it belongs to.
+
+For example, if a static API (CRE_TSK) that creates a task with task ID 1 is written inside the
+block of a protection domain with ID 3, then
+
+	$cfgData[:CRE_TSK][1][:domain] == 3
+
+In this case, note that the stored value is a number, not a NumStr object. 
+If you want to obtain the protection domain name as a string, you need to write something like the following:
+
+	domain = $cfgData[:CRE_TSK][1][:domain]
+	$domData[domain][:domid].str
+
+End

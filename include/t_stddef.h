@@ -87,106 +87,106 @@ typedef	void			(*TOPPERS_fp_t)(struct TOPPERS_dummy_t);
 #endif /* TOPPERS_fp */
 
 /*
- *  共通データ型
+ *  Common Data Types
  */
-typedef TOPPERS_bool	bool_t;		/* 真偽値 */
+typedef TOPPERS_bool	bool_t;		/* Boolean value */
 
-typedef signed int		int_t;		/* 自然なサイズの符号付き整数 */
-typedef unsigned int	uint_t;		/* 自然なサイズの符号無し整数 */
+typedef signed int		int_t;		/* Natural-size signed integer */
+typedef unsigned int	uint_t;		/* Natural-size unsigned integer */
 
-typedef signed long		long_t;		/* 長めのサイズの符号付き整数 */
-typedef unsigned long	ulong_t;	/* 長めのサイズの符号無し整数 */
+typedef signed long		long_t;		/* Long-size signed integer */
+typedef unsigned long	ulong_t;	/* Long-size unsigned integer */
 
-typedef int_t			FN;			/* 機能コード */
-typedef	int_t			ER;			/* エラーコード */
-typedef	int_t			ID;			/* オブジェクトのID番号 */
-typedef	uint_t			ATR;		/* オブジェクトの属性 */
-typedef	uint_t			STAT;		/* オブジェクトの状態 */
-typedef	uint_t			MODE;		/* サービスコールの動作モード */
-typedef	int_t			PRI;		/* 優先度 */
-typedef	uint32_t		TMO;		/* タイムアウト指定 */
-typedef	uint32_t		RELTIM;		/* 相対時間［NGKI0550］*/
+typedef int_t			FN;			/* Function code */
+typedef	int_t			ER;			/* Error code */
+typedef	int_t			ID;			/* Object ID number */
+typedef	uint_t			ATR;		/* Object attribute */
+typedef	uint_t			STAT;		/* Object status */
+typedef	uint_t			MODE;		/* Service call operating mode */
+typedef	int_t			PRI;		/* Priority */
+typedef	uint32_t		TMO;		/* Timeout specification */
+typedef	uint32_t		RELTIM;		/* Relative time [NGKI0550] */
 #ifdef UINT64_MAX
-typedef	uint64_t		SYSTIM;		/* システム時刻［NGKI0548］*/
+typedef	uint64_t		SYSTIM;		/* System time [NGKI0548] */
 #else /* UINT64_MAX */
-typedef	uint32_t		SYSTIM;		/* システム時刻［NGKI0548］*/
+typedef	uint32_t		SYSTIM;		/* System time [NGKI0548] */
 #endif /* UINT64_MAX */
-typedef	uint32_t		PRCTIM;		/* プロセッサ時間［NGKI0573］*/
-typedef	uint32_t		HRTCNT;		/* 高分解能タイマのカウント値 */
+typedef	uint32_t		PRCTIM;		/* Processor time [NGKI0573] */
+typedef	uint32_t		HRTCNT;		/* High-resolution timer count value */
 
-typedef	TOPPERS_fp		FP;			/* プログラムの起動番地 */
+typedef	TOPPERS_fp		FP;			/* Program start address */
 
-typedef	int_t			ER_BOOL;	/* エラーコードまたは真偽値 */
-typedef	int_t			ER_ID;		/* エラーコードまたはID番号 */
-typedef	int_t			ER_UINT;	/* エラーコードまたは符号無し整数 */
+typedef	int_t			ER_BOOL;	/* Error code or Boolean value */
+typedef	int_t			ER_ID;		/* Error code or ID number */
+typedef	int_t			ER_UINT;	/* Error code or unsigned integer */
 
-typedef uintptr_t		MB_T;		/* 管理領域を確保するためのデータ型 */
+typedef uintptr_t		MB_T;		/* Data type for allocating management area */
 
-typedef	uint32_t		ACPTN;		/* アクセス許可パターン */
-typedef	struct acvct {				/* アクセス許可ベクタ */
-	ACPTN		acptn1;				/* 通常操作1のアクセス許可パターン */
-	ACPTN		acptn2;				/* 通常操作2のアクセス許可パターン */
-	ACPTN		acptn3;				/* 管理操作のアクセス許可パターン */
-	ACPTN		acptn4;				/* 参照操作のアクセス許可パターン */
+typedef	uint32_t		ACPTN;		/* Access permission pattern */
+typedef	struct acvct {				/* Access permission vector */
+	ACPTN		acptn1;				/* Access permission pattern for normal operation 1 */
+	ACPTN		acptn2;				/* Access permission pattern for normal operation 2 */
+	ACPTN		acptn3;				/* Access permission pattern for management operation */
+	ACPTN		acptn4;				/* Access permission pattern for reference operation */
 } ACVCT;
 
 #endif /* TOPPERS_MACRO_ONLY */
 
 /*
- *  整数定数を作るマクロ
+ *  Macros for creating integer constants
  */
 #ifndef UINT_C
-#define UINT_C(val)		(val ## U)		/* uint_t型の定数を作るマクロ */
+#define UINT_C(val)		(val ## U)		/* Macro to create a constant of type uint_t */
 #endif /* UINT_C */
 
 #ifndef ULONG_C
-#define ULONG_C(val)	(val ## UL)		/* ulong_t型の定数を作るマクロ */
+#define ULONG_C(val)	(val ## UL)		/* Macro to create a constant of type ulong_t */
 #endif /* ULONG_C */
 
 /*
- *  一般定数
+ *  general constant
  */
 #ifndef NULL
-#define NULL		0			/* 無効ポインタ */
+#define NULL		0			/* Invalid pointer */
 #endif /* NULL */
 
 #ifndef true
-#define true		1			/* 真 */
+#define true		1			/* true */
 #endif /* true */
 
 #ifndef false
-#define false		0			/* 偽 */
+#define false		0			/* false */
 #endif /* false */
 
-#define E_OK		0			/* 正常終了 */
+#define E_OK		0			/* normal termination */
 
 /*
- *  メインエラーコード
+ *  Main Error Code
  */
-#define E_SYS		(-5)		/* システムエラー */
-#define E_NOSPT		(-9)		/* 未サポート機能 */
-#define E_RSFN		(-10)		/* 予約機能コード */
-#define E_RSATR		(-11)		/* 予約属性 */
-#define E_PAR		(-17)		/* パラメータエラー */
-#define E_ID		(-18)		/* 不正ID番号 */
-#define E_CTX		(-25)		/* コンテキストエラー */
-#define E_MACV		(-26)		/* メモリアクセス違反 */
-#define E_OACV		(-27)		/* オブジェクトアクセス違反 */
-#define E_ILUSE		(-28)		/* サービスコール不正使用 */
-#define E_NOMEM		(-33)		/* メモリ不足 */
-#define E_NOID		(-34)		/* ID番号不足 */
-#define E_NORES		(-35)		/* 資源不足 */
-#define E_OBJ		(-41)		/* オブジェクト状態エラー */
-#define E_NOEXS		(-42)		/* オブジェクト未生成 */
-#define E_QOVR		(-43)		/* キューイングオーバーフロー */
-#define E_RLWAI		(-49)		/* 待ち状態の強制解除 */
-#define E_TMOUT		(-50)		/* ポーリング失敗またはタイムアウト */
-#define E_DLT		(-51)		/* 待ちオブジェクトの削除 */
-#define E_CLS		(-52)		/* 待ちオブジェクトの状態変化 */
-#define E_RASTER	(-53)		/* タスクの終了要求 */
-#define E_WBLK		(-57)		/* ノンブロッキング受付け */
-#define E_BOVR		(-58)		/* バッファオーバーフロー */
-#define E_COMM		(-65)		/* 通信エラー */
+#define E_SYS		(-5)		/* System error */
+#define E_NOSPT		(-9)		/* Unsupported function */
+#define E_RSFN		(-10)		/* Reserved function code */
+#define E_RSATR		(-11)		/* Reserved attribute */
+#define E_PAR		(-17)		/* Parameter error */
+#define E_ID		(-18)		/* Invalid ID number */
+#define E_CTX		(-25)		/* Context error */
+#define E_MACV		(-26)		/* Memory access violation */
+#define E_OACV		(-27)		/* Object access violation */
+#define E_ILUSE		(-28)		/* Invalid service call */
+#define E_NOMEM		(-33)		/* Out of memory */
+#define E_NOID		(-34)		/* Insufficient ID number */
+#define E_NORES		(-35)		/* Insufficient resources */
+#define E_OBJ		(-41)		/* Object state error */
+#define E_NOEXS		(-42)		/* Object not created */
+#define E_QOVR		(-43)		/* Queuing overflow */
+#define E_RLWAI		(-49)		/* Forced release from waiting state */
+#define E_TMOUT		(-50)		/* Polling failure or timeout */
+#define E_DLT		(-51)		/* Deleted waiting object */
+#define E_CLS		(-52)		/* Change in waiting object state */
+#define E_RASTER	(-53)		/* Task termination request */
+#define E_WBLK		(-57)		/* Non-blocking acceptance */
+#define E_BOVR		(-58)		/* Buffer overflow */
+#define E_COMM		(-65)		/* Communication error */
 
 /*
  *  オブジェクト属性

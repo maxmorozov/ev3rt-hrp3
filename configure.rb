@@ -45,66 +45,65 @@ Encoding.default_external = 'utf-8'
 require "optparse"
 require "fileutils"
 
-#  オプションの定義
+#  Option definitions
 #
-#  -T <target>			ターゲット名（必須）
-#  -a <appldirs>		アプリケーションのディレクトリ名（複数指定可．デ
-#						フォルトはsampleディレクトリ）
-#  -A <applname>		アプリケーションプログラム名（デフォルトはsample1）
-#  -t					メインのオブジェクトファイルをリンク対象に含めない
-#  -c <cfgfile>			システムコンフィギュレーションファイル（.cfgファイ
-#						ル名）名
-#  -C <cdlflle>			コンポーネント記述ファイル（.cdlファイル）名
-#  -U <applobjs>		アプリケーションの追加のオブジェクトファイル
-#						（.oファイル名で指定．複数指定可）
-#  -S <syssvcobjs>		システムサービスのオブジェクトファイル
-#						（.oファイル名で指定．複数指定可）
-#  -B <bannerobj>		バナー表示のオブジェクトファイル（.oファイル名で指定）
-#  -L <kernel_lib>		カーネルライブラリ（libkernel.a）のディレクトリ名
-#						（省略した場合，カーネルライブラリもmakeする）
-#  -f					カーネルを関数単位でコンパイルするかどうかの指定
-#  -D <srcdir>			カーネルソースの置かれているディレクトリ
-#  -l <srclang>			プログラミング言語（現時点ではcとc++のみサポート）
-#  -m <tempmakefile>	Makefileのテンプレートのファイル名の指定（デフォル
-#						トはsampleディレクトリのMakefile）
-#  -d <objdir>			中間オブジェクトファイルと依存関係ファイルを置く
-#						ディレクトリ名（デフォルトはobjs）
-#  -w					TECSを使用しない
-#  -W <tecsdir>			TECS関係ファイルのディレクトリ名（デフォルトはソー
-#						スファイルのディレクトリの下のtecsgen）
-#  -r					トレースログ記録のサンプルコードを使用するかどうか
-#						の指定
-#  -V <devtooldir>		開発ツール（コンパイラ等）の置かれているディレクトリ
-#  -R <ruby>			rubyのパス名（明示的に指定する場合）
-#  -g <cfg>				コンフィギュレータ（cfg）のパス名
-#  -G <tecsgen>			TECSジェネレータ（tecsgen）のパス名
-#  -o <options>			コンパイルオプション（COPTSに追加）
-#  -O <options>			シンボル定義オプション（CDEFSに追加）
-#  -k <options>			リンカオプション（LDFLAGSに追加）
-#  -b <options>			リンカオプション（LIBSに追加）
+#  -T <target>			Target name (required)
+#  -a <appldirs>		Application directory names (multiple options allowed.
+#						Default is the sample directory)
+#  -A <applname>		Application program name (default is sample1)
+#  -t					Exclude the main object file from the link target
+#  -c <cfgfile>			System configuration file name
+#						(.cfg file name)
+#  -C <cdlflle>			Component description file (.cdl file)
+#  -U <applobjs>		Additional object files for the application
+#						(specify .o file names. Multiple files can be specified)
+#  -S <syssvcobjs>		System service object file (specify .o file name.
+#						Multiple files can be specified)
+#  -B <bannerobj>		Banner display object file (specify .o file names)
+#  -L <kernel_lib>		Directory name of the kernel library (libkernel.a)
+#						(If omitted, the kernel library will also be made)
+#  -f					Specifies whether to compile the kernel function-by-function.
+#  -D <srcdir>			Directory where the kernel source is located.
+#  -l <srclang>			Programming language (currently, only C and C++ are supported).
+#  -m <tempmakefile>	Specify the Makefile template file name
+#						(default is Makefile in the sample directory)
+#  -d <objdir>			Directory name for intermediate object files and dependency files
+#						(default is objs)
+#  -w					Does not use TECS.
+#  -W <tecsdir>			Directory name of TECS related files
+#						(default is tecsgen under the source file directory)
+#  -r					Specify whether to use the trace logging sample code
+#  -V <devtooldir>		Directory where development tools (compilers, etc.) are located.
+#  -R <ruby>			Pathname of Ruby (if explicitly specified).
+#  -g <cfg>				Pathname of the configurator (cfg).
+#  -G <tecsgen>			Pathname of the TECS generator (tecsgen).
+#  -o <options>			Compiler options (added to COPTS)
+#  -O <options>			Symbol definition options (added to CDEFs)
+#  -k <options>			Linker options (added to LDFLAGS)
+#  -b <options>			Linker options (added to LIBS)
 
-#  使用例(1)
+#  Usage example (1)
 #
 #  % ../configure.rb -T ct11mpcore_gcc -O "-DTOPPERS_USE_QEMU" \
 #					-A perf1 -a ../test -S "test_svc.o histogram.o"
 #
-#  使用例(2)
+#  Usage example (2)
 #
 #  % ../configure.rb -T macosx_gcc -L .
-#	アプリケーションプログラムは，sample1になる．
+#	The application program is sample1.
 #
-#  使用例(3)
+#  Usage example (3)
 #
 #  % ../configure.rb -T ct11mpcore_gcc -O "-DTOPPERS_USE_QEMU" -A tSample2 -t
-#	アプリケーションプログラムは，TECS版のサンプルプログラムになる．
+#	The application program will be the TECS version of the sample program.
 #
-#  使用例(4)
+#  Usage example (4)
 #
 #  % ../configure.rb -T ct11mpcore_gcc PRC_NUM=4
-#	PRC_NUMを4に定義する．
+#	Define PRC_NUM to be 4.
 
 #
-#  変数の初期化
+#  Initializing variables
 #
 $target = nil
 $appldirs = []
@@ -134,7 +133,7 @@ $ldflags = []
 $libs = []
 
 #
-#  オプションの処理
+#  Option Processing
 #
 OptionParser.new(nil, 22) do |opt|
   opt.on("-T target",		"taget name (mandatory)") do |val|
@@ -219,7 +218,7 @@ OptionParser.new(nil, 22) do |opt|
 end
 
 #
-#  オブジェクトファイル名の拡張子を返す
+#  Returns the object filename extension
 #
 def GetObjectExtension
   if /cygwin/ =~ RUBY_PLATFORM
@@ -230,7 +229,7 @@ def GetObjectExtension
 end
 
 #
-#  変数のデフォルト値（文字列変数のデフォルト値は初期化で与える）
+#  Default values ​​of variables (default values ​​of string variables are given during initialization)
 #
 if $appldirs.empty?
   $appldirs.push("\$(SRCDIR)/sample")
@@ -241,7 +240,7 @@ $cdlfile ||= $applname + ".cdl"
 $applobjs.unshift($applname + ".o") if !$option_t
 $bannerobj ||= ($omit_tecs == "") ? "tBannerMain.o" : "banner.o"
 if $srcdir.nil?
-  # ソースディレクトリ名を取り出す
+  # Extract the source directory name
   if /^(.*)\/configure/ =~ $0
     $srcdir = $1
   else
@@ -259,7 +258,7 @@ $cfg ||= $ruby + " \$(SRCDIR)/cfg/cfg.rb"
 $tecsgen ||= $ruby + " \$(TECSDIR)/tecsgen.rb"
 
 #
-#  -Tオプションとターゲット依存部ディレクトリの確認
+#  -T option and checking target dependency directories
 #
 if $target.nil?
   puts("configure.rb: -T option is mandatory")
@@ -278,7 +277,7 @@ if $target.nil?
 end
 
 #
-#  変数テーブルの作成
+#  Creating a variable table
 #
 $vartable = Hash.new("")
 $vartable["TARGET"] = $target
@@ -316,7 +315,7 @@ ARGV.each do |arg|
 end
 
 #
-#  ファイルを変換する
+#  Convert files
 #
 def convert(inFileName, outFileName)
   puts("Generating #{outFileName} from #{inFileName}.\n")
@@ -343,12 +342,12 @@ def convert(inFileName, outFileName)
 end
 
 #
-#  Makefileの生成
+#  Generate Makefile
 #
 convert($tempmakefile, "Makefile")
 
 #
-#  中間オブジェクトファイルと依存関係ファイルを置くディレクトリの作成
+#  Creating directories for intermediate object files and dependency files
 #
 if !File.directory?($objdir)
   Dir.mkdir($objdir)

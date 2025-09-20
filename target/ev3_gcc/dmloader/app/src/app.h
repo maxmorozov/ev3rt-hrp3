@@ -37,43 +37,69 @@
  *  アの利用により直接的または間接的に生じたいかなる損害に関しても，そ
  *  の責任を負わない．
  *
+ *  The above copyright holders grant permission to use, copy, modify, and redistribute
+ *  (hereinafter referred to as "use") this software (including modified versions of this software; 
+ *  the same applies hereinafter) free of charge, provided that the following conditions (1) through (4) are met:
+ *  (1) If you use this software in source code form, the above copyright notice, these terms of use,
+ *      and the disclaimer below must be included in the source code in their entirety.
+ *  (2) If you redistribute this software in a form that can be used for the development of other
+ *      software, such as in a library format, you must include the above copyright notice, these terms of
+ *      use, and the disclaimer below in the documentation (such as the user manual) accompanying the
+ *      distribution.
+ *  (3) If you redistribute this software in a form that cannot be used for the development of other
+ *      software, such as by incorporating it into a device, you must meet one of the following conditions:
+ *    (a) You must include the above copyright notice, these terms of use, and the following
+ *        disclaimer of warranty in any documentation accompanying the redistribution (such as the user
+ *        manual).
+ *    (b) You must report the form of redistribution to the TOPPERS Project in a manner specified
+ *        separately.
+ *  (4) You indemnify the above copyright holders and the TOPPERS Project from any damages arising
+ *      directly or indirectly from the use of this software.
+ *      You also indemnify the above copyright holders and the TOPPERS Project from any claims based on
+ *      any reason whatsoever by users or end users of this software.
+ * 
+ *  This software is provided without warranty. The above copyright holders and the TOPPERS Project
+ *  make no warranties regarding this software, including its suitability for a particular purpose.
+ *  Furthermore, they are not liable for any damages arising directly or indirectly from the use of this
+ *  software.
+ *
  *  $Id: sample1.h 2416 2012-09-07 08:06:20Z ertl-hiro $
  */
 
 /*
- *		サンプルプログラム(1)のヘッダファイル
+ *		Header file for sample program (1)
  */
 
 /*
- *  ターゲット依存の定義
+ *  Target Dependency Definitions
  */
 #include "target_test.h"
 
 /*
- *  各タスクの優先度の定義
+ *  Define the priority of each task
  */
 
-#define MAIN_PRIORITY	5		/* メインタスクの優先度 */
-								/* HIGH_PRIORITYより高くすること */
+#define MAIN_PRIORITY	5		/* Main task priority */
+								/* Must be higher than HIGH_PRIORITY */
 
-#define HIGH_PRIORITY	9		/* 並行実行されるタスクの優先度 */
+#define HIGH_PRIORITY	9		/* Priority of concurrently executed tasks */
 #define MID_PRIORITY	10
 #define LOW_PRIORITY	11
 
 /*
- *  ターゲットに依存する可能性のある定数の定義
+ *  Defining constants that may be target dependent
  */
 
 #ifndef STACK_SIZE
-#define	STACK_SIZE		4096		/* タスクのスタックサイズ */
+#define	STACK_SIZE		4096		/* Task stack size */
 #endif /* STACK_SIZE */
 
 #ifndef LOOP_REF
-#define LOOP_REF		ULONG_C(1000000)	/* 速度計測用のループ回数 */
+#define LOOP_REF		ULONG_C(1000000)	/* Number of loops for speed measurement */
 #endif /* LOOP_REF */
 
 /*
- *  関数のプロトタイプ宣言
+ *  Function prototype declaration
  */
 #ifndef TOPPERS_MACRO_ONLY
 

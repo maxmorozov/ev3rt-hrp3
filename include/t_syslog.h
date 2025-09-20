@@ -41,22 +41,21 @@
  */
 
 /*
- *		システムログ出力を行うための定義
+ *      Definition for system log output
  *
- *  システムログサービスは，システムのログ情報を出力するためのサービス
- *  である．カーネルからのログ情報の出力にも用いるため，内部で待ち状態
- *  にはいることはない．
+ *  The system log service is a service for outputting system log information.
+ *  It is also used to output log information from the kernel, so it never 
+ *  enters a waiting state internally.
  *
- *  ログ情報は，カーネル内のログバッファに書き込むか，低レベルの文字出
- *  力関数を用いて出力する．どちらを使うかは，拡張サービスコールで切り
- *  換えることができる．
+ *  Log information is written to the kernel log buffer or output using 
+ *  low-level character output functions.
+ *  The method of use can be switched using an extended service call.
  *
- *  ログバッファ領域がオーバフローした場合には，古いログ情報を消して上
- *  書きする．
+ *  If the log buffer area overflows, old log information is erased and 
+ *  overwritten.
  *
- *  アセンブリ言語のソースファイルからこのファイルをインクルードする時
- *  は，TOPPERS_MACRO_ONLYを定義しておくことで，マクロ定義以外の記述を
- *  除くことができる．
+ *  When including this file from an assembly language source file, you can 
+ *  exclude all code other than macro definitions by defining TOPPERS_MACRO_ONLY.
  */
 
 #ifndef TOPPERS_T_SYSLOG_H
@@ -78,69 +77,69 @@ extern "C" {
 #endif /* TOPPERS_MACRO_ONLY */
 
 /*
- *  ログ情報の種別の定義
+ *  Definition of log information types
  */
-#define LOG_TYPE_COMMENT	UINT_C(0x01)	/* コメント */
-#define LOG_TYPE_ASSERT		UINT_C(0x02)	/* アサーションの失敗 */
+#define LOG_TYPE_COMMENT	UINT_C(0x01)	/* Comment */
+#define LOG_TYPE_ASSERT		UINT_C(0x02)	/* Assertion failure */
 
-#define LOG_TYPE_INH		UINT_C(0x11)	/* 割込みハンドラ */
-#define LOG_TYPE_ISR		UINT_C(0x12)	/* 割込みサービスルーチン */
-#define LOG_TYPE_CYC		UINT_C(0x13)	/* 周期ハンドラ */
-#define LOG_TYPE_ALM		UINT_C(0x14)	/* アラームハンドラ */
-#define LOG_TYPE_OVR		UINT_C(0x15)	/* オーバランハンドラ */
-#define LOG_TYPE_EXC		UINT_C(0x16)	/* CPU例外ハンドラ */
-#define LOG_TYPE_TSKSTAT	UINT_C(0x21)	/* タスク状態変化 */
-#define LOG_TYPE_DSP		UINT_C(0x31)	/* ディスパッチャ */
-#define LOG_TYPE_SVC		UINT_C(0x41)	/* サービスコール */
+#define LOG_TYPE_INH		UINT_C(0x11)	/* Interrupt handler */
+#define LOG_TYPE_ISR		UINT_C(0x12)	/* Interrupt service routine */
+#define LOG_TYPE_CYC		UINT_C(0x13)	/* Cyclic handler */
+#define LOG_TYPE_ALM		UINT_C(0x14)	/* Alarm handler */
+#define LOG_TYPE_OVR		UINT_C(0x15)	/* Overrun handler */
+#define LOG_TYPE_EXC		UINT_C(0x16)	/* CPU exception handler */
+#define LOG_TYPE_TSKSTAT	UINT_C(0x21)	/* Task state change */
+#define LOG_TYPE_DSP		UINT_C(0x31)	/* Dispatcher */
+#define LOG_TYPE_SVC		UINT_C(0x41)	/* Service call */
 
-#define LOG_ENTER			UINT_C(0x00)	/* 入口／開始 */
-#define LOG_LEAVE			UINT_C(0x80)	/* 出口／終了 */
+#define LOG_ENTER			UINT_C(0x00)	/* Entry/start */
+#define LOG_LEAVE			UINT_C(0x80)	/* Exit/end */
 
 /*
- *  ログ情報の重要度の定義
+ *  Defining the importance of log information
  */
-#define LOG_EMERG			UINT_C(0)		/* シャットダウンに値するエラー */
+#define LOG_EMERG			UINT_C(0)		/* Shutdown-worthy errors */
 #define LOG_ALERT			UINT_C(1)
 #define LOG_CRIT			UINT_C(2)
-#define LOG_ERROR			UINT_C(3)		/* システムエラー */
-#define LOG_WARNING			UINT_C(4)		/* 警告メッセージ */
+#define LOG_ERROR			UINT_C(3)		/* System Error */
+#define LOG_WARNING			UINT_C(4)		/* Warning message */
 #define LOG_NOTICE			UINT_C(5)
 #define LOG_INFO			UINT_C(6)
-#define LOG_DEBUG			UINT_C(7)		/* デバッグ用メッセージ */
+#define LOG_DEBUG			UINT_C(7)		/* Debugging messages */
 
 #ifndef TOPPERS_MACRO_ONLY
 
 /*
- *  ログ情報のデータ構造
+ *  Log information data structure
  */
 
 #ifndef LOGTIM
-#define LOGTIM		HRTCNT			/* ログ時刻のデータ型 */
+#define LOGTIM		HRTCNT			/* Log time data type */
 #endif /* LOGTIM */
 
-#define TNUM_LOGPAR		6			/* ログパラメータの数 */
+#define TNUM_LOGPAR		6			/* Number of log parameters */
 
 #ifndef LOGPAR
-#define LOGPAR		intptr_t		/* ログパラメータのデータ型 */
+#define LOGPAR		intptr_t		/* Log parameter data type */
 #define ULOGPAR		uintptr_t
 #endif /* LOGPAR */
 
 typedef struct {
-	uint_t	logtype;				/* ログ情報の種別 */
-	LOGTIM	logtim;					/* ログ時刻 */
-	LOGPAR	logpar[TNUM_LOGPAR];	/* ログパラメータ */
+	uint_t	logtype;				/* Log information type */
+	LOGTIM	logtim;					/* Log Time */
+	LOGPAR	logpar[TNUM_LOGPAR];	/* Log parameters */
 } SYSLOG;
 
 /*
- *  ログ情報の出力
+ *  Output of log information
  *
- *  ログ情報の出力は，TOPPERS_SVC_CALLが定義されていない時はシステムロ
- *  グ機能のアダプタ経由で行い，定義されている時はTECSで記述されたシス
- *  テムログ機能を直接呼び出す．
+ *  When TOPPERS_SVC_CALL is not defined, log information is output via
+ *  the system log function adapter. When it is defined, the system log function
+ *  described in TECS is called directly.
  *
- *  アダプタ経由で呼び出した場合には，エラーが返る可能性がある．エラー
- *  が返った場合には，TOPPERS_assert_abortを呼ぶ（NDEBUGが定義されてい
- *  る場合を除く）．直接呼び出した場合は，エラーが返る可能性がない．
+ *  When calling via the adapter, an error may be returned.
+ *  If an error is returned, TOPPERS_assert_abort is called (unless NDEBUG is defined).
+ *  When calling directly, there is no possibility of an error being returned.
  */
 #ifndef TOPPERS_SVC_CALL
 
@@ -190,7 +189,7 @@ extern ER	_syslog_wri_log(uint_t prio, const SYSLOG *p_syslog) throw();
 
 #ifndef TOPPERS_OMIT_SYSLOG
 /*
- *  システムログ出力のための下位のライブラリ関数
+ *  Low-level library functions for system logging
  */
 
 Inline void
@@ -281,7 +280,7 @@ t_syslog_6(uint_t prio, uint_t type, LOGPAR arg1, LOGPAR arg2,
 }
 
 /*
- *  ログ情報（コメント）を出力するためのライブラリ関数（vasyslog.c）
+ *  Library function for outputting log information (comments) (vasyslog.c)
  */
 extern void	tt_syslog(SYSLOG *p_logbuf, const char *format, va_list ap);
 
@@ -298,7 +297,7 @@ syslog(uint_t prio, const char *format, ...)
 }
 
 /*
- *  エラーメッセージを出力するためのライブラリ関数（t_perror.c）
+ *  Library function for outputting error messages (t_perror.c)
  */
 extern void	tt_perror(SYSLOG *p_logbuf, const char *file, int_t line,
 		 									const char *expr, ER ercd);
@@ -314,7 +313,7 @@ t_perror(uint_t prio, const char *file, int_t line, const char *expr, ER ercd)
 
 #else /* TOPPERS_OMIT_SYSLOG */
 /*
- *  システムログ出力を抑止する場合
+ *  To suppress system log output:
  */
 
 Inline void
@@ -368,11 +367,12 @@ t_perror(uint_t prio, const char *file, int_t line, const char *expr, ER ercd)
 #endif /* TOPPERS_OMIT_SYSLOG */
 
 /*
- *  システムログ出力のためのライブラリ関数
+ * Library function for system log output
  *
- *  formatおよび後続の引数から作成したメッセージを，重大度prioでログ情
- *  報として出力するためのマクロ．arg1〜argnはLOGPAR型にキャストするた
- *  め，LOGPAR型に型変換できる任意の型でよい．
+ * Macro for creating a message from the format and subsequent arguments
+ * and outputting it as log information with a severity level of prio.
+ * arg1 through argn are cast to the LOGPAR type, so they can be any type
+ * that can be converted to the LOGPAR type.
  */
 
 #define syslog_0(prio, format) \
@@ -401,7 +401,7 @@ t_perror(uint_t prio, const char *file, int_t line, const char *expr, ER ercd)
 										(LOGPAR)(arg4), (LOGPAR)(arg5))
 
 /*
- *  ログ情報（アサーションの失敗）を出力するためのマクロ
+ *  Macros for outputting log information (assertion failures)
  */
 #ifndef TOPPERS_assert_fail
 #define TOPPERS_assert_fail(exp, file, line) \

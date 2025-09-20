@@ -16,27 +16,27 @@ $cfgData[:CRE_MTX].each{|_, params|
     error_ercd("E_NOSPT", params, "Mutex must belong to TDOM_APP in dynamic loading mode")
   end
 
-  # mtxatrが無効の場合（E_RSATR）［NGKI2025］［NGKI2010］
-  #（TA_NULL，TA_TPRI，TA_CEILINGのいずれでもない場合）
+  # When mtxatr is invalid (E_RSATR) [NGKI2025] [NGKI2010]
+  #(When not TA_NULL, TA_TPRI, or TA_CEILING)
   if !(params[:mtxatr] == $TA_NULL || params[:mtxatr] == $TA_TPRI \
 									|| params[:mtxatr] == $TA_CEILING)
     error_illegal_id("E_RSATR", params, :mtxatr, :mtxid)
   end
 
   if params[:mtxatr] == $TA_CEILING
-    # 優先度上限ミューテックスの場合
-    # ceilpriの記述が省略されている場合［NGKI2035］
+    # For priority ceiling mutexes
+    # When the ceilpri description is omitted [NGKI2035]
     if !params.has_key?(:ceilpri)
       error_api(params, "ceilpri must be specified in %apiname of %mtxid")
 
-    # ceilpriが有効範囲外の場合（E_PAR）［NGKI2037］
-    #（TMIN_TPRI <= ceilpri && ceilpri <= TMAX_TPRIでない場合）
+    # When ceilpri is out of the valid range (E_PAR) [NGKI2037]
+    #(Unless TMIN_TPRI <= ceilpri && ceilpri <= TMAX_TPRI)
     elsif !($TMIN_TPRI <= params[:ceilpri] && params[:ceilpri] <= $TMAX_TPRI)
       error_illegal_id("E_PAR", params, :ceilpri, :mtxid)
     end
   else
-    # 優先度上限ミューテックスでない場合
-    # ceilpriが記述されている場合は警告メッセージを出す
+    # If it is not a priority ceiling mutex
+    # If ceilpri is specified, a warning message is displayed.
     if params.has_key?(:ceilpri)
       warning_api(params, "%%ceilpri is ignored in %apiname of %mtxid")
     end

@@ -40,7 +40,7 @@
  */
 
 /*
- *		ARMコアサポートモジュール
+ *		ARM Core Support Module
  */
 
 #ifndef TOPPERS_ARM_H
@@ -49,14 +49,14 @@
 #include <t_stddef.h>
 
 /*
- *  ARMコアの特殊命令のインライン関数定義
+ *  Inline function definitions for ARM core special instructions
  */
 #ifndef TOPPERS_MACRO_ONLY
 #include "arm_insn.h"
 #endif /*  TOPPERS_MACRO_ONLY */
 
 /*
- *  ARM例外ベクタ
+ *  ARM Exception Vectors
  */
 #define RESET_VECTOR	UINT_C(0x00)
 #define UNDEF_VECTOR	UINT_C(0x04)
@@ -67,7 +67,7 @@
 #define FIQ_VECTOR		UINT_C(0x1c)
 
 /*
- *  ARM例外ベクタ番号
+ *  ARM exception vector number
  */
 #define RESET_NUMBER	UINT_C(0)
 #define UNDEF_NUMBER	UINT_C(1)
@@ -78,19 +78,19 @@
 #define FIQ_NUMBER		UINT_C(7)
 
 /*
- *  CPSRの割込み禁止ビット
+ *  CPSR interrupt disable bit
  */
 #define CPSR_INT_MASK	UINT_C(0xc0)
 #define CPSR_IRQ_BIT	UINT_C(0x80)
 #define CPSR_FIQ_BIT	UINT_C(0x40)
 
 /*
- *  CPSRのThumbビット
+ *  Thumb bits in the CPSR
  */
 #define CPSR_THUMB_BIT	UINT_C(0x20)
 
 /*
- *  CPSRのモードビット
+ *  CPSR mode bits
  */
 #define CPSR_MODE_MASK	UINT_C(0x1f)
 #define CPSR_USER_MODE	UINT_C(0x10)
@@ -102,9 +102,9 @@
 #define CPSR_SYS_MODE	UINT_C(0x1f)
 
 /*
- *  CP15のシステム制御レジスタ（SCTLR）の設定値
+ *  CP15 system control register (SCTLR) setting value
  *
- *  ARMv7では，CP15_SCTLR_EXTPAGEは常に1になっている．
+ *  In ARMv7, CP15_SCTLR_EXTPAGE is always set to 1.
  */
 #if __TARGET_ARCH_ARM == 6
 #define CP15_SCTLR_EXTPAGE		UINT_C(0x00800000)
@@ -116,7 +116,7 @@
 #define CP15_SCTLR_MMU			UINT_C(0x00000001)
 
 /*
- *  CP15のコプロセッサアクセス制御レジスタ（CPACR）の設定値
+ *  CP15 Coprocessor Access Control Register (CPACR) setting
  */
 #define CP15_CPACR_ASEDIS			UINT_C(0x80000000)
 #define CP15_CPACR_D32DIS			UINT_C(0x40000000)
@@ -124,7 +124,7 @@
 #define CP15_CPACR_CP10_FULLACCESS	UINT_C(0x00300000)
 
 /*
- *  CP15のフォールト状態レジスタの参照値
+ *  Reference value of the CP15 fault status register
  */
 #define CP15_FSR_FS_MASK			UINT_C(0x0000040f)
 #define CP15_FSR_FS_ALIGNMENT		UINT_C(0x00000001)
@@ -134,19 +134,19 @@
 #define CP15_FSR_FS_PERMISSION2		UINT_C(0x0000000f)
 
 /*
- *  CP15のパフォーマンスモニタ制御レジスタ（PMCR）の設定値
+ *  CP15 Performance Monitor Control Register (PMCR) setting value
  */
 #define CP15_PMCR_ALLCNTR_ENABLE		UINT_C(0x01)
 #define CP15_PMCR_PMCCNTR_DIVIDER		UINT_C(0x08)
 
 /*
- *  CP15のパフォーマンスモニタカウントイネーブルセットレジスタ（PMCNTENSET）
- *  の設定値
+ *  CP15 Performance Monitor Count Enable Set Register (PMCNTENSET)
+ *  Setting value
  */
 #define CP15_PMCNTENSET_CCNTR_ENABLE	UINT_C(0x80000000)
 
 /*
- *  CP15の変換テーブルベースレジスタ（TTBR）の設定値
+ *  CP15 Translation Table Base Register (TTBR) setting value
  */
 #define CP15_TTBR_RGN_SHAREABLE		UINT_C(0x00000002)
 #if __TARGET_ARCH_ARM == 7
@@ -163,11 +163,11 @@
 #endif /* __TARGET_ARCH_ARM < 7 */
 
 /*
- *  MMU関連の定義（VMSA）
+ *  MMU-related definitions (VMSA)
  */
 
 /*
- *  セクションとページのサイズ
+ *  Section and Page Size
  */
 #define ARM_SSECTION_SIZE			UINT_C(0x1000000)
 #define ARM_SECTION_SIZE			UINT_C(0x0100000)
@@ -175,7 +175,7 @@
 #define ARM_PAGE_SIZE				UINT_C(0x0001000)
 
 /*
- *  セクションテーブルとページテーブルのサイズ
+ *  Section table and page table sizes
  */
 #define ARM_SECTION_TABLE_SIZE		UINT_C(0x4000)
 #define ARM_SECTION_TABLE_ALIGN		UINT_C(0x4000)
@@ -186,102 +186,102 @@
 #define ARM_PAGE_TABLE_ENTRY		(ARM_PAGE_TABLE_SIZE / sizeof(uint32_t))
 
 /*
- *  第1レベルディスクリプタの設定値
+ *  First-level descriptor setting value
  */
-#define ARM_MMU_DSCR1_FAULT			0x00000U	/* フォルト */
-#define ARM_MMU_DSCR1_PAGETABLE		0x00001U	/* コアースページテーブル */
-#define ARM_MMU_DSCR1_SECTION		0x00002U	/* セクション */
-#define ARM_MMU_DSCR1_SSECTION		0x40002U	/* スーパーセクション */
+#define ARM_MMU_DSCR1_FAULT			0x00000U	/* Fault */
+#define ARM_MMU_DSCR1_PAGETABLE		0x00001U	/* Coarse Page Table */
+#define ARM_MMU_DSCR1_SECTION		0x00002U	/* Section */
+#define ARM_MMU_DSCR1_SSECTION		0x40002U	/* Supersection */
 
-#define ARM_MMU_DSCR1_SHARED		0x10000U	/* プロセッサ間で共有 */
-#define ARM_MMU_DSCR1_TEX000		0x00000U	/* TEXビットが000 */
-#define ARM_MMU_DSCR1_TEX001		0x01000U	/* TEXビットが001 */
-#define ARM_MMU_DSCR1_TEX010		0x02000U	/* TEXビットが010 */
-#define ARM_MMU_DSCR1_TEX100		0x04000U	/* TEXビットが100 */
-#define ARM_MMU_DSCR1_CB00			0x00000U	/* Cビットが0，Bビットが0 */
-#define ARM_MMU_DSCR1_CB01			0x00004U	/* Cビットが0，Bビットが1 */
-#define ARM_MMU_DSCR1_CB10			0x00008U	/* Cビットが1，Bビットが0 */
-#define ARM_MMU_DSCR1_CB11			0x0000cU	/* Cビットが1，Bビットが1 */
+#define ARM_MMU_DSCR1_SHARED		0x10000U	/* Shared Between Processors */
+#define ARM_MMU_DSCR1_TEX000		0x00000U	/* TEX Bit is 000 */
+#define ARM_MMU_DSCR1_TEX001		0x01000U	/* TEX Bit is 001 */
+#define ARM_MMU_DSCR1_TEX010		0x02000U	/* TEX Bit is 010 */
+#define ARM_MMU_DSCR1_TEX100		0x04000U	/* TEX Bit is 100 */
+#define ARM_MMU_DSCR1_CB00			0x00000U	/* C Bit is 0, B Bit is 0 */
+#define ARM_MMU_DSCR1_CB01			0x00004U	/* C Bit is 0, B Bit is 1 */
+#define ARM_MMU_DSCR1_CB10			0x00008U	/* C Bit is 1, B Bit is 0 */
+#define ARM_MMU_DSCR1_CB11			0x0000cU	/* C Bit is 1, B Bit is 1 */
 
 #if __TARGET_ARCH_ARM < 6
 
-#define ARMV5_MMU_DSCR1_AP01		0x00400U	/* APビットが01 */
-#define ARMV5_MMU_DSCR1_AP10		0x00800U	/* APビットが10 */
-#define ARMV5_MMU_DSCR1_AP11		0x00c00U	/* APビットが11 */
+#define ARMV5_MMU_DSCR1_AP01		0x00400U	/* AP Bit is 01 */
+#define ARMV5_MMU_DSCR1_AP10		0x00800U	/* AP Bit is 10 */
+#define ARMV5_MMU_DSCR1_AP11		0x00c00U	/* AP Bit is 11 */
 
 #else /* __TARGET_ARCH_ARM < 6 */
 
-#define ARMV6_MMU_DSCR1_NONGLOBAL	0x20000U	/* グローバルでない */
-#define ARMV6_MMU_DSCR1_AP001		0x00400		/* APビットが001 */
-#define ARMV6_MMU_DSCR1_AP010		0x00800		/* APビットが010 */
-#define ARMV6_MMU_DSCR1_AP011		0x00c00		/* APビットが011 */
-#define ARMV6_MMU_DSCR1_AP101		0x08400		/* APビットが101 */
-#define ARMV6_MMU_DSCR1_AP110		0x08800		/* APビットが110 */
-#define ARMV6_MMU_DSCR1_AP111		0x08c00		/* APビットが111 */
-#define ARMV6_MMU_DSCR1_ECC			0x00200U	/* ECCが有効（MPCore）*/
-#define ARMV6_MMU_DSCR1_NOEXEC		0x00010U	/* 実行不可 */
+#define ARMV6_MMU_DSCR1_NONGLOBAL	0x20000U	/* Not Global */
+#define ARMV6_MMU_DSCR1_AP001		0x00400		/* AP Bit is 001 */
+#define ARMV6_MMU_DSCR1_AP010		0x00800		/* AP Bit is 010 */
+#define ARMV6_MMU_DSCR1_AP011		0x00c00		/* AP Bit is 011 */
+#define ARMV6_MMU_DSCR1_AP101		0x08400		/* AP Bit is 101 */
+#define ARMV6_MMU_DSCR1_AP110		0x08800		/* AP Bit is 110 */
+#define ARMV6_MMU_DSCR1_AP111		0x08c00		/* AP bits are 111 */
+#define ARMV6_MMU_DSCR1_ECC			0x00200U	/* ECC enabled (MPCore) */
+#define ARMV6_MMU_DSCR1_NOEXEC		0x00010U	/* Cannot be executed */
 
 #endif /* __TARGET_ARCH_ARM < 6 */
 
 /*
- *  第2レベルディスクリプタの設定値
+ *  Second-level descriptor setting value
  */
-#define ARM_MMU_DSCR2_FAULT			0x0000U		/* フォルト */
-#define ARM_MMU_DSCR2_LARGE			0x0001U		/* ラージページ */
-#define ARM_MMU_DSCR2_SMALL			0x0002U		/* スモールページ */
+#define ARM_MMU_DSCR2_FAULT			0x0000U		/* Fault */
+#define ARM_MMU_DSCR2_LARGE			0x0001U		/* Large page */
+#define ARM_MMU_DSCR2_SMALL			0x0002U		/* Small page */
 
-#define ARM_MMU_DSCR2_CB00			0x0000U		/* Cビットが0，Bビットが0 */
-#define ARM_MMU_DSCR2_CB01			0x0004U		/* Cビットが0，Bビットが1 */
-#define ARM_MMU_DSCR2_CB10			0x0008U		/* Cビットが1，Bビットが0 */
-#define ARM_MMU_DSCR2_CB11			0x000cU		/* Cビットが1，Bビットが1 */
+#define ARM_MMU_DSCR2_CB00			0x0000U		/* C bit is 0, B bit is 0 */
+#define ARM_MMU_DSCR2_CB01			0x0004U		/* C bit is 0, B bit is 1 */
+#define ARM_MMU_DSCR2_CB10			0x0008U		/* C bit is 1, B bit is 0 */
+#define ARM_MMU_DSCR2_CB11			0x000cU		/* C bit is 1, B bit is 1 */
 
 #if __TARGET_ARCH_ARM < 6
 
-#define ARMV5_MMU_DSCR2_AP01		0x0550U		/* AP[0-3]ビットが01 */
-#define ARMV5_MMU_DSCR2_AP10		0x0aa0U		/* AP[0-3]ビットが10 */
-#define ARMV5_MMU_DSCR2_AP11		0x0ff0U		/* AP[0-3]ビットが11 */
+#define ARMV5_MMU_DSCR2_AP01		0x0550U		/* AP[0-3] bits are 01 */
+#define ARMV5_MMU_DSCR2_AP10		0x0aa0U		/* AP[0-3] bits are 10 */
+#define ARMV5_MMU_DSCR2_AP11		0x0ff0U		/* AP[0-3] bits are 11 */
 
-/* ラージページのディスクリプタ用 */
-#define ARMV5_MMU_DSCR2L_TEX000		0x0000U		/* TEXビットが000 */
-#define ARMV5_MMU_DSCR2L_TEX001		0x1000U		/* TEXビットが001 */
-#define ARMV5_MMU_DSCR2L_TEX010		0x2000U		/* TEXビットが010 */
-#define ARMV5_MMU_DSCR2L_TEX100		0x4000U		/* TEXビットが100 */
+/* For large page descriptors */
+#define ARMV5_MMU_DSCR2L_TEX000		0x0000U		/* TEX bit is 000 */
+#define ARMV5_MMU_DSCR2L_TEX001		0x1000U		/* TEX bit is 001 */
+#define ARMV5_MMU_DSCR2L_TEX010		0x2000U		/* TEX bit is 010 */
+#define ARMV5_MMU_DSCR2L_TEX100		0x4000U		/* TEX bit is 100 */
 
 #else /* __TARGET_ARCH_ARM < 6 */
 
-#define ARMV6_MMU_DSCR2_NONGLOBAL	0x0800U		/* グローバルでない */
-#define ARMV6_MMU_DSCR2_SHARED		0x0400U		/* プロセッサ間で共有 */
-#define ARMV6_MMU_DSCR2_AP001		0x0010		/* APビットが001 */
-#define ARMV6_MMU_DSCR2_AP010		0x0020		/* APビットが010 */
-#define ARMV6_MMU_DSCR2_AP011		0x0030		/* APビットが011 */
-#define ARMV6_MMU_DSCR2_AP101		0x0210		/* APビットが101 */
-#define ARMV6_MMU_DSCR2_AP110		0x0220		/* APビットが110 */
-#define ARMV6_MMU_DSCR2_AP111		0x0230		/* APビットが111 */
+#define ARMV6_MMU_DSCR2_NONGLOBAL	0x0800U		/* Not global */
+#define ARMV6_MMU_DSCR2_SHARED		0x0400U		/* Shared between processors */
+#define ARMV6_MMU_DSCR2_AP001		0x0010		/* AP bit is 001 */
+#define ARMV6_MMU_DSCR2_AP010		0x0020		/* AP bit is 010 */
+#define ARMV6_MMU_DSCR2_AP011		0x0030		/* AP bit is 011 */
+#define ARMV6_MMU_DSCR2_AP101		0x0210		/* AP bit is 101 */
+#define ARMV6_MMU_DSCR2_AP110		0x0220		/* AP bit is 110 */
+#define ARMV6_MMU_DSCR2_AP111		0x0230		/* AP bit is 111 */
 
-/* ラージページのディスクリプタ用 */
-#define ARMV6_MMU_DSCR2L_TEX000		0x0000U		/* TEXビットが000 */
-#define ARMV6_MMU_DSCR2L_TEX001		0x1000U		/* TEXビットが001 */
-#define ARMV6_MMU_DSCR2L_TEX010		0x2000U		/* TEXビットが010 */
-#define ARMV6_MMU_DSCR2L_TEX100		0x4000U		/* TEXビットが100 */
-#define ARMV6_MMU_DSCR2L_NOEXEC		0x8000U		/* 実行不可 */
+/* For large page descriptors */
+#define ARMV6_MMU_DSCR2L_TEX000		0x0000U		/* TEX bit is 000 */
+#define ARMV6_MMU_DSCR2L_TEX001		0x1000U		/* TEX bit is 001 */
+#define ARMV6_MMU_DSCR2L_TEX010		0x2000U		/* TEX bit is 010 */
+#define ARMV6_MMU_DSCR2L_TEX100		0x4000U		/* TEX bit is 100 */
+#define ARMV6_MMU_DSCR2L_NOEXEC		0x8000U		/* Cannot execute */
 
-/* スモールページのディスクリプタ用 */
-#define ARMV6_MMU_DSCR2S_TEX000		0x0000U		/* TEXビットが000 */
-#define ARMV6_MMU_DSCR2S_TEX001		0x0040U		/* TEXビットが001 */
-#define ARMV6_MMU_DSCR2S_TEX010		0x0080U		/* TEXビットが010 */
-#define ARMV6_MMU_DSCR2S_TEX100		0x0100U		/* TEXビットが100 */
-#define ARMV6_MMU_DSCR2S_NOEXEC		0x0001U		/* 実行不可 */
+/* For small page descriptors */
+#define ARMV6_MMU_DSCR2S_TEX000		0x0000U		/* TEX bit is 000 */
+#define ARMV6_MMU_DSCR2S_TEX001		0x0040U		/* TEX bit is 001 */
+#define ARMV6_MMU_DSCR2S_TEX010		0x0080U		/* TEX bit is 010 */
+#define ARMV6_MMU_DSCR2S_TEX100		0x0100U		/* TEX bit is 100 */
+#define ARMV6_MMU_DSCR2S_NOEXEC		0x0001U		/* Cannot execute */
 
 #endif /* __TARGET_ARCH_ARM < 6 */
 
 #ifndef TOPPERS_MACRO_ONLY
 
 /*
- *	コプロセッサ15の操作関数
+ *	Coprocessor 15 operation functions
  */
 
 /*
- *  High exception vectorsを使うように設定
+ *  Set to use High exception vectors
  */
 Inline void
 arm_set_high_vectors(void)
@@ -294,7 +294,7 @@ arm_set_high_vectors(void)
 }
 
 /*
- *  Low exception vectorsを使うように設定
+ *  Set to use Low exception vectors
  */
 Inline void
 arm_set_low_vectors(void)
@@ -307,7 +307,7 @@ arm_set_low_vectors(void)
 }
 
 /*
- *  分岐予測をイネーブル
+ *  Enable branch prediction
  */
 Inline void
 arm_enable_bp(void)
@@ -320,7 +320,7 @@ arm_enable_bp(void)
 }
 
 /*
- *  分岐予測をディスエーブル
+ *  Disable branch prediction
  */
 Inline void
 arm_disable_bp(void)
@@ -333,10 +333,10 @@ arm_disable_bp(void)
 }
 
 /*
- *  プロセッサ番号の取得
+ *  Get the processor number
  *
- *  マルチプロセッサアフィニティレジスタを読んで，その下位8ビットを返す．
- *  ARMv6では，マルチプロセッサをサポートしている場合にのみ使用できる．
+ *  Reads the multiprocessor affinity register and returns the lowest 8 bits.
+ *  On ARMv6, it is only available if multiprocessor support is available.
  */
 #if __TARGET_ARCH_ARM >= 6
 
@@ -352,11 +352,11 @@ arm_prc_index(void)
 #endif /* __TARGET_ARCH_ARM >= 6 */
 
 /*
- *  キャッシュの操作
+ *  Cache operations
  */
 
 /*
- *  命令／データキャッシュのイネーブル／ディスエーブル
+ *  Enable/disable instruction/data cache
  */
 extern void arm_enable_icache(void);
 extern void arm_disable_icache(void);
@@ -364,7 +364,7 @@ extern void arm_enable_dcache(void);
 extern void arm_disable_dcache(void);
 
 /*
- *  キャッシュのイネーブル
+ *  Enable Cache
  */
 Inline void
 arm_enable_cache(void)
@@ -374,7 +374,7 @@ arm_enable_cache(void)
 }
 
 /*
- *  キャッシュのディスエーブル
+ *  Disable cache
  */
 Inline void
 arm_disable_cache(void)
@@ -384,14 +384,14 @@ arm_disable_cache(void)
 }
 
 /*
- *  ARMv5におけるデータキャッシュの無効化／クリーン
+ *  Invalidate/clean data cache in ARMv5
  */
 #if __TARGET_ARCH_ARM <= 5
 extern void armv5_clean_and_invalidate_dcache(void);
 #endif /* __TARGET_ARCH_ARM <= 5 */
 
 /*
- *  ARMv7におけるデータキャッシュの無効化／クリーン
+ *  Invalidate/clean data cache in ARMv7
  */
 #if __TARGET_ARCH_ARM == 7
 extern void armv7_invalidate_dcache(void);
@@ -399,7 +399,7 @@ extern void armv7_clean_and_invalidate_dcache(void);
 #endif /* __TARGET_ARCH_ARM == 7 */
 
 /*
- *  データキャッシュと統合キャッシュの無効化
+ *  Invalidating Data and Integrated Caching
  */
 Inline void
 arm_invalidate_dcache(void)
@@ -413,7 +413,7 @@ arm_invalidate_dcache(void)
 }
 
 /*
- *  データキャッシュと統合キャッシュのクリーンと無効化
+ *  Cleaning and invalidating the data cache and unified cache
  */
 Inline void
 arm_clean_and_invalidate_dcache(void)
@@ -429,7 +429,7 @@ arm_clean_and_invalidate_dcache(void)
 }
 
 /*
- *  命令キャッシュの無効化
+ *  Invalidate instruction cache
  */
 Inline void
 arm_invalidate_icache(void)
@@ -438,7 +438,7 @@ arm_invalidate_icache(void)
 }
 
 /*
- *  分岐予測の無効化
+ *  Disable branch prediction
  */
 Inline void
 arm_invalidate_bp(void)
@@ -449,7 +449,7 @@ arm_invalidate_bp(void)
 }
 
 /*
- *  TLBの無効化
+ *  TLB invalidation
  */
 Inline void
 arm_invalidate_tlb(void)
@@ -461,7 +461,7 @@ arm_invalidate_tlb(void)
 #endif /* TOPPERS_MACRO_ONLY */
 
 /*
- *  浮動小数点例外制御レジスタ（FPEXC）の設定値
+ *  Floating-Point Exception Control Register (FPEXC) setting
  */
 #define FPEXC_ENABLE		UINT_C(0x40000000)
 

@@ -55,7 +55,7 @@
 
 #if 0 // TODO: put this to proper file
 /*
- *  タスクのスタックサイズ
+ *  Task stack size
  */
 #ifndef STACK_SIZE
 #define STACK_SIZE  4096

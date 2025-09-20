@@ -41,14 +41,14 @@
  */
 
 /*
- *	ソフトウェア割込みによるサービスコール呼出し（ARM用）
+ *	Service call invocation by software interrupt (for ARM)
  */
 
 #ifndef TOPPERS_CORE_SVC_H
 #define TOPPERS_CORE_SVC_H
 
 /*
- *  svc命令を用いたサービスコールの呼び出し方法
+ *  How to invoke a service call using the svc instruction
  */
 
 #define	SVC_SERVICE_CALL	1
@@ -143,14 +143,14 @@
 } while (false)
 
 /*
- *  サービスコール呼出し関数の展開
+ *  Service call function expansion
  */
 #ifndef TOPPERS_SVC_CALL
 #include "arch/gcc/tool_svc.h"
 #endif /* TOPPERS_SVC_CALL */
 
 /*
- *  cal_svcサービスコールの呼出し
+ *  Invoking the cal_svc service call
  */
 Inline ER_UINT
 cal_svc(FN fncd, intptr_t par1, intptr_t par2,

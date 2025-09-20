@@ -17,42 +17,42 @@ $cfgData[:CRE_CYC].each{|_, params|
   end
 
   objid = :cycid
-  # パラメータを変数に格納
+  # Store the parameters in variables
   nfymode = params[:nfymode]
   nfymode1 = nfymode & 0x0f
   nfymode2 = nfymode & ~0x0f
   # par1 = params[:par1]
   par2 = params[:par2]
 
-  # 通知処理のパラメータ数による補正処理
+  # Correction process based on the number of notification process parameters
   if nfymode == $TNFY_HANDLER || nfymode1 == $TNFY_SETVAR \
 								|| nfymode1 == $TNFY_SETFLG \
 								|| nfymode1 == $TNFY_SNDDTQ
-    # 通知処理のパラメータが2つの場合
+    # When the notification process has two parameters
     numpar = 2
     params[:epar1] = params[:par3]
     params[:epar2] = params[:par4]
   else
-    # 通知処理のパラメータが1つの場合
+    # When there is one parameter for notification processing
     numpar = 1
     params[:epar1] = params[:par2]
     params[:epar2] = params[:par3]
     params[:par2] = nil
   end
 
-  # パラメータ数のチェック
+  # Checking the number of parameters
   if (numpar == 2 && par2.nil?) || (nfymode2 != 0 && params[:epar1].nil?) \
 								|| (nfymode2 == $TENFY_SETFLG && params[:epar2].nil?)
-    # パラメータが足りない場合
+    # If parameters are missing
     error_api(params, "too few parameters for nfymode `#{nfymode}' " \
 											"in %apiname of %#{objid}")
   elsif (nfymode2 == 0 && !params[:epar1].nil?) \
 					|| (nfymode2 != $TENFY_SETFLG && !params[:epar2].nil?)
-    # パラメータが多すぎる場合
+    # Too many parameters
     error_api(params, "too many parameters for nfymode `#{nfymode}' " \
 											"in %apiname of %#{objid}")
   elsif nfymode1 == $TNFY_HANDLER && nfymode2 == 0		#［NGKI3721］
-    # カーネルドメインに属していない場合［NGKI3695］
+    # If it does not belong to the kernel domain [NGKI3695]
     if !params.has_key?(:domain) || params[:domain] != $TDOM_KERNEL
       error_ercd("E_OACV", params, "nfymode `#{nfymode}' is not permitted " \
 								"in user domains in %apiname of %#{objid}")
@@ -61,12 +61,12 @@ $cfgData[:CRE_CYC].each{|_, params|
     if (nfymode1 == $TNFY_SETVAR && nfymode2 != 0) \
          || (nfymode1 == $TNFY_INCVAR && nfymode2 != 0) \
          || !([$TNFY_ACTTSK, $TNFY_WUPTSK, $TNFY_SIGSEM, $TNFY_SNDDTQ].include?(nfymode1))
-      # nfymodeの値が正しくない場合（E_PAR）［NGKI3730］
+      # If the nfymode value is incorrect (E_PAR) [NGKI3730]
       error_illegal_id("E_PAR", params, :nfymode, objid)
     end
 
     if !([0, $TENFY_SETVAR, $TENFY_INCVAR, $TENFY_ACTTSK, $TENFY_WUPTSK, $TENFY_SIGSEM, $TENFY_SETFLG,  $TENFY_SNDDTQ].include?(nfymode2))
-        # nfymodeの値が正しくない場合（E_PAR）［NGKI3730］
+        # If the nfymode value is incorrect (E_PAR) [NGKI3730]
         error_illegal_id("E_PAR", params, :nfymode, objid)
     end
   end

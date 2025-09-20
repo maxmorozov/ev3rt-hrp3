@@ -334,13 +334,13 @@ extern const DOMINIB	dominib_none;
 #define tnum_udom	((uint_t)(tmax_domid - TMIN_DOMID + 1))
 
 /*
- *  保護ドメインIDから保護ドメイン初期化ブロックを取り出すためのマクロ
+ *  Macro to extract a protection domain initialization block from a protection domain ID
  */
 #define INDEX_DOM(domid)	((uint_t)((domid) - TMIN_DOMID))
 #define get_dominib(domid)	(&(dominib_table[INDEX_DOM(domid)]))
 
 /*
- *  オブジェクト属性中のドメインIDを操作するためのマクロ
+ *  Macros for manipulating domain IDs in object attributes
  */
 #define TA_DOMMASK					(0xffU << 16)
 #define get_atrdomid(atr)			((ID)(int8_t)((atr) >> 16))

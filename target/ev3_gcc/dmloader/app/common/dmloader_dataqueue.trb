@@ -16,18 +16,18 @@ $cfgData[:CRE_DTQ].each{|_, params|
     error_ercd("E_NOSPT", params, "Data queue must belong to TDOM_APP in dynamic loading mode")
   end
 
-  # dtqatrが無効の場合（E_RSATR）［NGKI1669］［NGKI1661］
-  #（TA_TPRI以外のビットがセットされている場合）
+  # When dtqatr is invalid (E_RSATR) [NGKI1669] [NGKI1661]
+  #(If any bit other than TA_TPRI is set)
   if (params[:dtqatr] & ~($TA_TPRI)) != 0
     error_illegal_id("E_RSATR", params, :dtqatr, :dtqid)
   end
 
-  # dtqmbがNULLでない場合（E_NOSPT）［HRPS0121］
+  # If dtqmb is not NULL (E_NOSPT) [HRPS0121]
   if params[:dtqmb] != "NULL"
     error_illegal_id("E_NOSPT", params, :dtqmb, :dtqid)
   end
 
-  # dtqcntが負の場合（E_PAR）
+  # dtqcnt is negative (E_PAR)
   if params[:dtqcnt] < 0
     error_illegal_id("E_PAR", params, :dtqcnt, :dtqid)
   end

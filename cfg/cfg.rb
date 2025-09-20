@@ -52,9 +52,9 @@ require "GenFile.rb"
 require "SRecord.rb"
 
 #
-#  定数定義
+#  Constant definitions
 #
-# 共通
+# common
 VERSION = "1.4.0"
 
 # cfg1_out関係
@@ -70,40 +70,40 @@ CFG1_OUT_SYMS       = "cfg1_out.syms"
 CFG1_OUT_TIMESTAMP  = "cfg1_out.timestamp"
 CFG1_OUT_TARGET_H   = "target_cfg1_out.h"
 
-# cfg2_out関係
+# cfg2_out related
 CFG2_OUT_DB        = "cfg2_out.db"
 
-# cfg3_out関係
+# cfg3_out related
 CFG3_OUT_DB        = "cfg3_out.db"
 
 #
-#  エラー発生有無フラグ
+#  Error occurrence flag
 #
 $errorFlag = false
 
 #
-#  エラー／警告表示関数
+#  Error/Warning Display Function
 #
-# 一般的なエラー表示（処理を中断）
+# General error message (processing is interrupted)
 def error_exit(message, location = "")
   location += " " if location != ""
   abort("#{location}error: #{message}")
 end
 
-# 一般的なエラー表示（処理を継続）
+# General error message (processing continues)
 def error(message, location = "")
   location += " " if location != ""
   STDERR.puts("#{location}error: #{message}")
   $errorFlag = true
 end
 
-# 一般的な警告表示
+# General warning signs
 def warning(message, location = "")
   location += " " if location != ""
   STDERR.puts("#{location}warning: #{message}")
 end
 
-# システムコンフィギュレーションファイルの構文解析時のエラー
+# Error parsing system configuration file
 $noParseError = 0
 def parse_error(cfgFile, message)
   error(message, "#{cfgFile.getFileName()}:#{cfgFile.getLineNo}:")
@@ -112,20 +112,20 @@ def parse_error(cfgFile, message)
   end
 end
 
-# システムコンフィギュレーションファイルの構文解析時の警告
+# System configuration file parsing warnings
 def parse_warning(cfgFile, message)
   warning(message, "#{cfgFile.getFileName()}:#{cfgFile.getLineNo}:")
 end
 
 #
-#  静的API処理時のエラー／警告表示関数
+#  Error/warning display function when processing static API
 #
-# 静的API処理時のエラー／警告を短く記述できるように，メッセージ中の%ま
-# たは%%で始まる記述を以下のように展開する．
+# To allow for concise descriptions of errors/warnings during static API processing, 
+# descriptions beginning with % or %% in the message are expanded as follows:
 #	%label → #{params[:label]}
 #	%%label → label `#{params[:label]}'
 #
-# エラー／警告メッセージの展開
+# Expanding error/warning messages
 def expand_message(message, params)
   result = message.dup
   while /%%(\w+)\b/ =~ result
@@ -141,24 +141,24 @@ def expand_message(message, params)
   return(result)
 end
 
-# 静的API処理時のエラー
+# Static API processing error
 def error_api(params, message)
   error(expand_message(message, params), \
 			"#{params[:_file_]}:#{params[:_line_]}:")
 end
 
-# 静的API処理時の警告
+# Static API processing warnings
 def warning_api(params, message)
   warning(expand_message(message, params), \
 			"#{params[:_file_]}:#{params[:_line_]}:")
 end
 
-# 静的API処理時のエラー（エラーコード付き）
+# Static API processing error (with error code)
 def error_ercd(errorCode, params, message)
   error_api(params, "#{errorCode}: #{message}")
 end
 
-# パラメータのエラー
+# Parameter Error
 def error_wrong(errorCode, params, symbol, wrong)
   error_ercd(errorCode, params, "%%#{symbol} is #{wrong} in %apiname")
 end
@@ -173,7 +173,7 @@ def error_wrong_sym(errorCode, params, symbol, symbol2, wrong)
 									"in %apiname of %%#{symbol2}")
 end
 
-# パラメータ不正のエラー
+# Invalid parameter error
 def error_illegal(errorCode, params, symbol)
   error_ercd(errorCode, params, "illegal %%#{symbol} in %apiname")
 end
@@ -189,11 +189,11 @@ def error_illegal_sym(errorCode, params, symbol, symbol2)
 end
 
 #
-#  Stringクラスの拡張（二重引用符で囲まれた文字列の作成／展開）
+#  Extending the String class (creating/expanding double-quoted strings)
 #
 class String
   #
-  #  二重引用符で囲まれた文字列の作成
+  #  Creating double-quoted strings
   #
   def quote
     result = ""
@@ -229,7 +229,7 @@ class String
   end
 
   #
-  #  二重引用符で囲まれた文字列の展開
+  #  Interpolating double-quoted strings
   #
   def unquote
     if /^\"(.*)\"$/m =~ self
@@ -279,7 +279,7 @@ class String
 end
 
 #
-#  NumStrクラス（数値に文字列を付加したもの）の定義
+#  Definition of the NumStr class (a string added to a number)
 #
 class NumStr
   def initialize(val, str = val.to_s)
@@ -287,19 +287,19 @@ class NumStr
     @str = str
   end
 
-  # 数値情報を返す
+  # Returns numerical information
   def val
     return @val
   end
   alias_method :to_i, :val
 
-  # 文字列情報を返す
+  # Returns string information
   def str
     return @str
   end
   alias_method :to_s, :str
 
-  # 比較は数値情報で行う
+  # Comparison is made using numerical information
   def ==(other)
     @val == other
   end
@@ -310,17 +310,17 @@ class NumStr
     @val <=> other
   end
 
-  # ハッシュのキーとして使う時の比較も数値情報で行う
+  # Comparisons when used as hash keys are also performed using numerical information.
   def eql?(other)
     @val == other
   end
 
-  # ハッシュ値の定義も上書きする
+  # Overrides hash value definitions as well
   def hash
     return @val.hash
   end
 
-  # 数値クラスと演算できるようにする
+  # Allows operations with numeric classes
   def coerce(other)
     if other.kind_of?(Numeric)
       return other, @val
@@ -329,34 +329,34 @@ class NumStr
     end
   end
 
-  # 二重引用符で囲まれた文字列の作成
+  # Creating double-quoted strings
   def quote
     str.quote
   end
 
-  # 二重引用符で囲まれた文字列の展開
+  # Interpolating double-quoted strings
   def unquote
     str.unquote
   end
 
-  # pp時の表示
+  # Display when pp
   def pretty_print(q)
     q.text("[#{@val}(=0x#{@val.to_s(16)}),")
     @str.pretty_print(q)
     q.text("]")
   end
 
-  # 未定義のメソッドは@valに送る
+  # Send undefined methods to @val
   def method_missing(*method)
     @val.send(*method)
   end
 end
 
 #
-#  シンボルファイルの読み込み
+#  Loading symbol files
 #
-#  以下のメソッドは，GNUのnmが生成するシンボルファイルに対応している．
-#  別のツールに対応する場合には，このメソッドを書き換えればよい．
+#  The following methods correspond to symbol files generated by GNU nm:
+#  If you want to support a different tool, you can rewrite this method.
 #
 def ReadSymbolFile(symbolFileName)
   begin
@@ -367,10 +367,10 @@ def ReadSymbolFile(symbolFileName)
 
   symbolAddress = {}
   symbolFile.each do |line|
-    # スペース区切りで分解
+    # Space-delimited decomposition
     fields = line.split(/\s+/)
 
-    # 3列になっていない行は除外
+    # Exclude rows that are not in three columns
     if fields.size == 3
       symbolAddress[fields[2]] = fields[0].hex
     end
@@ -380,7 +380,7 @@ def ReadSymbolFile(symbolFileName)
 end
 
 #
-#  値取得シンボルをグローバル変数として定義する
+#  Define a get value symbol as a global variable
 #
 def DefineSymbolValue
   $symbolValueTable.each do |symbolName, symbolData|
@@ -395,21 +395,21 @@ def DefineSymbolValue
 end
 
 #
-#  インクルードパスからファイルを探す
+#  Finding files in the include path
 #
 def SearchFilePath(fileName)
   if File.exist?(fileName)
-    # 指定したファイルパスに存在する
+    # Exists in the specified file path
     return fileName
   elsif /^\./ =~ fileName
-    # 相対パスを指定していて見つからなかった場合，存在しないものとする
-    #（意図しないファイルが対象となることを防止）
+    # If a relative path is specified and not found, it is assumed not to exist 
+    # (prevents unintended files from being targeted).
     return nil
   else
-    # 各インクルードパスからファイル存在チェック
+    # Check whether a file exists in each include path
     $includeDirectories.each do |includeDirectory|
       path = includeDirectory + "/" + fileName
-      # 見つかったら相対パスを返す
+      # If found, return the relative path.
       if File.exist?(path)
         return path
       end
@@ -419,7 +419,7 @@ def SearchFilePath(fileName)
 end
 
 #
-#  指定した生成スクリプト（trbファイル）を検索してloadする
+#  Search for and load the specified generation script (trb file)
 #
 def IncludeTrb(fileName)
   filePath = SearchFilePath(fileName)
@@ -431,7 +431,7 @@ def IncludeTrb(fileName)
 end
 
 #
-#  インクルードディレクティブ（#include）の生成
+#  Generate include directives (#include)
 #
 def GenerateIncludes(genFile)
   $cfgFileInfo.each do |cfgInfo|
@@ -442,11 +442,11 @@ def GenerateIncludes(genFile)
 end
 
 #
-#  パス3の処理
+#  Pass 3 processing
 #
 def Pass3
   #
-  #  パス2から引き渡される情報をファイルから読み込む
+  #  Read the information passed from path 2 from the file
   #
   db = PStore.new(CFG2_OUT_DB)
   db.transaction(true) do
@@ -456,19 +456,19 @@ def Pass3
   end
 
   #
-  #  値取得シンボルをグローバル変数として定義する
+  #  Define a get value symbol as a global variable
   #
   DefineSymbolValue()
 
   #
-  #  生成スクリプト（trbファイル）を実行する
+  #  Run the generated script (trb file)
   #
   $trbFileNames.each do |trbFileName|
     IncludeTrb(trbFileName)
   end
 
   #
-  #  パス4に引き渡す情報をファイルに生成
+  #  Generate the information to be passed to pass 4 in a file
   #
   if !$omitOutputDb
     db = PStore.new(CFG3_OUT_DB)
@@ -481,11 +481,11 @@ def Pass3
 end
 
 #
-#  パス4の処理
+#  Pass 4 processing
 #
 def Pass4
   #
-  #  パス3から引き渡される情報をファイルから読み込む
+  #  Read the information passed from path 3 from the file
   #
   db = PStore.new(CFG3_OUT_DB)
   db.transaction(true) do
@@ -495,12 +495,12 @@ def Pass4
   end
 
   #
-  #  値取得シンボルをグローバル変数として定義する
+  #  Define a get value symbol as a global variable
   #
   DefineSymbolValue()
 
   #
-  #  生成スクリプト（trbファイル）を実行する
+  #  Run the generated script (trb file)
   #
   $trbFileNames.each do |trbFileName|
     IncludeTrb(trbFileName)
@@ -508,7 +508,7 @@ def Pass4
 end
 
 #
-#  生成スクリプト（trbファイル）向けの関数
+#  Functions for generating scripts (trb files)
 #
 def SYMBOL(symbol)
   if !$romSymbol.nil? && $romSymbol.has_key?($asmLabel + symbol)
@@ -542,7 +542,7 @@ def PEEK(address, size, signed=false)
 end
 
 #
-#  グローバル変数の初期化
+#  Initializing global variables
 #
 $kernel = nil
 $pass = nil
@@ -560,7 +560,7 @@ $supportDomain = false
 $supportClass = false
 
 #
-#  オプションの処理
+#  Option Processing
 #
 OptionParser.new("Usage: cfg.rb [options] CONFIG-FILE", 40) do |opt|
   opt.version = VERSION
@@ -623,27 +623,27 @@ end
 $configFileNames = ARGV
 
 #
-#  オプションのチェック
+#  Check options
 #
 if $pass.nil?
-  # パスの指定は必須
+  # Specifying the path is mandatory
   abort("`--pass' option is mandatory")
 elsif /^[1234]$/ !~ $pass
   abort("pass number `#{$pass}' is not valid")
 end
 
-# パス1では，静的APIテーブルは必須
+# In pass 1, the static API table is required
 if ($pass == "1" && $apiTableFileNames.empty?)
   abort("`--api-table' option must be specified in pass 1")
 end
 
-# パス1以外では，生成スクリプト（trbファイル）が必須
+# A generation script (trb file) is required except for path 1.
 if ($pass != "1" && $trbFileNames.empty?)
   abort("`--trb-file' must be specified except in pass 1")
 end
 
 #
-#  カーネルオプションの処理
+#  Kernel option processing
 #
 case $kernel
 when /^hrp/
@@ -656,7 +656,7 @@ when /^hrmp/
 end
 
 #
-#  ID番号入力ファイルの取り込み
+#  Importing ID number input file
 #
 $inputObjid = {}
 if !$idInputFileName.nil?
@@ -675,7 +675,7 @@ if !$idInputFileName.nil?
 end
 
 #
-#  指定されたシンボルファイルの読み込み
+#  Load the specified symbol file
 #
 if !$romSymbolFileName.nil?
   if File.exist?($romSymbolFileName)
@@ -686,7 +686,7 @@ if !$romSymbolFileName.nil?
 end
 
 #
-#  指定されたSレコードファイルの読み込み
+#  Read the specified S record file
 #
 if !$romImageFileName.nil?
   if File.exist?($romImageFileName)
@@ -697,7 +697,7 @@ if !$romImageFileName.nil?
 end
 
 #
-#  パスに従って各処理を実行
+#  Execute each process according to the path
 #
 case $pass
 when "1"
@@ -714,7 +714,7 @@ else
   error_exit("invalid pass: #{$pass}")
 end
 
-# エラー発生時はabortする
+# Abort if an error occurs
 if $errorFlag
   if ($0 == __FILE__)
     abort()
@@ -725,12 +725,12 @@ if $errorFlag
 end
 
 #
-#  作成したすべてのファイルを出力する
+#  Print all the files you created
 #
 GenFile.output
 
 # 
-#  タイムスタンプファイルの生成
+#  Generate a timestamp file
 # 
 if !$timeStampFileName.nil?
   File.open($timeStampFileName, "w").close

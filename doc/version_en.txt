@@ -1,0 +1,647 @@
+    	TOPPERS/HRP3 Kernel
+    	Change History
+
+    	Supported Version: Release 3.1.0
+    	Last Updated: February 3, 2019
+
+This document describes the change history of the TOPPERS/HRP3 kernel, listed in reverse
+chronological order. It also describes the major differences from the TOPPERS/HRP2 kernel, 
+Release 2.2.2.
+
+---------------------------------------------------------------------
+ TOPPERS/HRP Kernel
+     Toyohashi Open Platform for Embedded Real-Time Systems/
+     High Reliable system Profile Kernel
+
+ Copyright (C) 2016-2019 by Embedded and Real-Time Systems Laboratory
+             Graduate School of Information Science, Nagoya Univ., JAPAN
+
+ The above copyright holder grants free permission to use, copy, modify, and redistribute
+ (hereinafter referred to as "use") this software (including modified versions of this software; the
+ same applies hereinafter) provided that the following conditions (1) through (4) are met:
+ (1) If you use this software in source code form, the above copyright notice, these terms of use,
+     and the following disclaimer must be included in the source code in their entirety.
+ (2) If you redistribute this software in a form that can be used for other software development,
+     such as in a library format, you must include the above copyright notice, these terms of use, and
+     the following disclaimer in the accompanying documentation (such as a user manual).
+ (3) If you redistribute this software in a form that cannot be used for other software development,
+     such as by embedding it in a device, you must meet one of the following conditions:
+    (a) You must include the above copyright notice, these terms of use, and the following disclaimer in
+        the accompanying documentation (such as a user manual).
+    (b) You must report the form of redistribution to the TOPPERS Project using a method specified
+        separately.
+ (4) You indemnify the above copyright holders and the TOPPERS Project from any damages arising
+     directly or indirectly from the use of this software.
+     Furthermore, you hereby indemnify the above copyright holders and the TOPPERS Project from any
+     claims of any kind arising from users or end users of this software.
+
+ This software is provided without warranty. The above copyright holders and the TOPPERS Project make
+ no warranties regarding this software, including its suitability for any particular purpose.
+ Furthermore, they shall not be liable for any damages arising directly or indirectly from the use of
+ this software.
+
+ $Id: version.txt 665 2019-02-03 17:06:18Z ertl-hiro $
+----------------------------------------------------------------------
+
+		TOPPERS/HRP3 kernel
+		Major changes from Release 3.0.0 to 3.1.0
+
+List of Changes
+
+● Specification Changes and Enhancements
+
+- Added a time window notification function
+
+- Addressed a loophole in the LMT_DOM restriction
+    - Added a condition that would result in an E_OACV error to loc_mtx [NGKI5124].
+
+- Addressed the introduction of the scheduling unit concept
+    - Added a definition for the SCHEDNO macro.
+    - Renamed the first parameter of mrot_rdq, mget_lod, and mget_nth to schedno.
+
+- Eliminated standard sections for each protection domain
+    - Removed the code that registered standard sections for each protection domain.
+    - Changed the target-dependent section so that code placed in the .noinit_kernel 
+      section was placed in .system_stack, and code placed in the .text_shared section 
+      was placed in .shared_code.
+    - Modified the sample and test programs to accommodate this change.
+
+- Made the ATT_SEC memory region parameter (regname) optional.
+    - Modified the generation script to handle the case where it is omitted.
+    - Modified the test program to take advantage of this change.
+
+- Added an overrun handler function extension package.
+
+- Added non-TECS system services.
+
+- Added a new SIL memory space synchronous write function.
+    - Added a standard memory space synchronous write function to sil.h.
+    - Added a definition of TOPPERS_SIL_WRITE_SYNC to each target-dependent 
+      (or core-dependent) section.
+
+- Changed configurator specifications.
+    - Added conditional directives to select which C preprocessor directives to enable.
+    - Expanded to allow macros to be written in string parameters.
+
+- Expanded and changed specifications for the ARM core-dependent, chip-dependent, and target-dependent sections.
+    - Added FPU support.
+    - Added chip-dependent sections for Zynq7000 and target-dependent sections for Zybo.
+    - Added definitions for target-dependent memory object access attributes.
+    - Changed the MMU settings so that the S bit (shared) is not set for stack areas.
+    - Supported non-shared device areas in the MMU settings.
+    - In the dynamic creation extension package, the starting address and size of the user stack area 
+      set when creating a user task with acre_tsk can now be a multiple of 8.
+
+- Added a timer driver simulator
+    - Added a timer driver simulator (arch/simtimer).
+    - Added a target for the CT11MPcore+ timer driver simulator.
+
+- Other enhancements
+    - Added the -B option to the configuration script (configure.rb).
+
+● Bug Fixes
+
+- Fixed a scheduling bug
+    - Fixed an issue where tasks belonging to the kernel domain were executed regardless of priority
+      when time partitioning was not used.
+    - Fixed an issue where tasks were not dispatched when their priority was changed.
+
+- Fixed a get_did bug
+    - Fixed a bug that could cause tasks to not be dispatched when their priority was changed.
+
+- Fixed a bug where high-resolution timer interrupts were not set properly.
+    - Fixed an issue where tmevtb_register was called when the timing of a high-resolution timer
+      interrupt should have been set after a time event was set.
+
+- Fixed an issue where SYSTIM data types could not be passed correctly via software interrupts.
+    - Fixed the target-independent section so that parameters are passed correctly when set_tim
+      (with one parameter and SYSTIM data type) is called via a software interrupt.
+    - Updated the ARM core-dependent section to accommodate this fix.
+
+- Fixed a bug in ref_tsk
+    - Fixed an issue where tskwait and wobjid would not return correctly when in a double-wait state.
+
+- Fixed an error checking issue in DEF_EXC
+    - Fixed an issue where valid CPU exception handler numbers, but which could not be registered
+      with DEF_EXC, were not treated as errors.
+
+- Fixed an issue where high-resolution timers were unnecessarily set with adj_tim.
+    - Fixed adj_tim so that set_hrt_event is not called when is_signal_time is specified.
+
+- Fixed an error checking issue in CRE_ALM
+    - Fixed an issue where TA_STA could be set as the alarm notification attribute 
+      (though doing so did not result in an error).
+
+- Fixed error checking related to the notification function
+    - Fixed an issue where the configurator would crash in the access rights check code if an object
+      ID error was detected in the check pass.
+    - Fixed error messages.
+
+- Serial interface driver bug fixes
+    - Fixed an issue where callbacks were not permitted when FC_START was received.
+
+- Fixed bugs in the ARM core-dependent, chip-dependent, and target-dependent sections.
+    - Fixed the position of the ret_extsvc label.
+    - Fixed an issue where a memory barrier was missing after an interrupt controller access.
+      A memory barrier was also added to start_dispatch.
+    - Fixed an issue with the service call invocation code with five parameters (CAL_SVC_5M).
+    - Fixed an issue in the MPCore-dependent section where TCYC_HRTCNT was undefined.
+    - Fixed call_exit_kernel to set it to a non-task context (setting excpt_nest_count to 1).
+    - Fixed the RZ/A1 chip-dependent section where the SIO driver's termination routine now waits
+      for the serial port FIFO to empty.
+
+- Other bug fixes
+    - Fixed an error check for ATT_REG and ATT_MEM.
+    - Fixed the imrot_rdq macro definition in kernel.h.
+    - Fixed the LOG_GET_DID_LEAVE macro parameters.
+    - Fixed the redzone method to be applied per memory region.
+    - Fixed the banner display dependency description in sample/Makefile.
+    - Fixed option processing in the configure script (configure.rb).
+
+● Implementation Improvements
+
+- Improved system period switching and time window switching processes
+    - Time window switching is now called directly rather than via an interrupt. Accordingly, time
+      window timer interrupts and high-resolution timer interrupts are now given the same priority.
+    - When chg_som is called in the dispatch pending state, the system period switching pending
+      mechanism is now used when switching from system period stop mode to another mode.
+
+- Changed the way initialization and termination routines are processed
+    - Instead of calling functions in the configurator, the number and table of initialization and
+      termination routines are generated and called in order.
+
+- Changed get_tid to no longer cause a CPU lock state.
+
+- Changed the way linker scripts are generated
+    - cfg3_out.ld is now always generated in the pass 3 generation script, and ldscript.ld is always
+      generated in the pass 4 generation script.
+    - Removed the process in the Makefile that uses sed to generate cfg3_out.ld and ldscript.ld 
+      (sed may not be available in some environments).
+    - Added a generation script for generating target-dependent linker scripts to the
+      target-dependent section, and changed it so that it is called from the generation script 
+      for each path.
+
+- Changed the generated linker script (GNU development environment)
+    - Stopped linking standard sections of object modules that are not ATT_MODed to the end of the
+      unassigned section (removed the statement linking "*").
+    - For libraries that the compiler always uses (libgcc.a for GCC), linked the standard sections
+      of object modules listed in $TARGET_LIBS to the end of the unassigned section.
+    - To determine which functions in a library to link, generated a statement at the beginning of
+      the linker script to link sections that do not actually exist.
+    - Generates code to discard sections not registered with ATT_MOD/ATT_SEC (this detects errors).
+    - Added ATT_MOD, which registers standard libraries, to the system configuration files of 
+      the sample and test programs.
+
+- Configurator changes
+    - Added GenerateIncludes (generates include directives).
+    - Removed IncludeFiles.
+    - Fixed to prevent ruby ​​warnings. Added the -w option.
+
+- Changed the generation script (to reduce modifications when supporting classes, etc.)
+    - Changed $cfgData[:CRE_DOM] to $domData.
+    - Changed data related to standard memory regions to be stored in $standardMemreg.
+    - Moved data related to standard memory regions common to all protection domains to
+      $commonMemreg, and removed $commonStdrom.
+    - Changed static API parameter names. Changed parameter names in $cfgData and $memObj accordingly. 
+    - Improved time window handling.
+    - Changed protection domain enclosing handling.
+    - Changed the check path for stack space for non-task contexts.
+    - Fixed a bug to prevent ruby warnings from being issued.
+
+- Moved the trace log recording sample code to a target-independent section.
+    - Moved the code for incorporating the trace log recording sample code to 
+      a target-independent section.
+
+- Provided a component for outputting low-level output from an SIO port.
+    - Added tPutLogSIOPort.cdl and tPutLogSIOPort.c.
+    - Modified each target-dependent section to use them.
+
+- Improvements to the Simple SIO Driver
+    - The name of the open flag has been unified to "opened."
+    - Changed the termination process to close the SIO port.
+    - Changed the process to prevent double-opening of SIO ports (unified).
+    - Changed the SIO port to close only when it is opened.
+    - Fixed an issue where the open flag was not cleared when closing an SIO port.
+
+- Improved implementation of system services and libraries
+    - Changed the return type of each service call in the execution time distribution aggregation
+      service to ER.
+    - Removed unnecessary processing in the system log function and system log task.
+    - Changed syslog_print to output a line break.
+
+- Changed the ARM core-dependent, chip-dependent, and target-dependent sections.
+    - Improved the method for determining the number of page tables to allocate.
+    - Changed the blx instruction to use for ARMv5 and later.
+    - Removed the MPCore-dependent part (arch/arm_gcc/mpcore) as a chip-dependent part, and added
+      the corresponding files to the ARM core-dependent part (arch/arm_gcc/common). Changed
+      target-dependent parts that use the MPCore-dependent part to accommodate this.
+    - Unified the definitions of TCYC_HRTCNT, TSTEP_HRTCNT, TMAX_TWDTIM, and TMAX_OVRTIM to be in
+      the target-dependent part.
+    - Moved target-dependent SIO driver components to the chip-dependent part where possible.
+    - Improved the initialization process of the simple SIO driver.
+    - Changed the method for requesting high-resolution timer interrupts in the timer module of the
+      MPCore-dependent part. Added a measure to prevent spurious interrupts.
+    - Addressed the case where the SGI interrupt request disable flag cannot be manipulated in the GIC-dependent part.
+    - Fixed the overrun timer in the timer module of the target-dependent part for CT11MPcore so
+      that it does not set the load register to 0 when running under QEMU.
+    - In the definition for the sample program in the target-dependent section for CT11MPcore,
+      MEASURE_TWICE has been changed to be defined when running on QEMU.
+    - Changed the RZ/A1 chip-dependent section to use the MPCore-dependent section.
+    - The architecture-dependent section for RZ/A1 has been made compatible with the overrun handler
+      function extension package (however, due to insufficient timers, it cannot be used
+      simultaneously with time partitioning).
+    - Modified the RZ/A1 chip-dependent section so that the serial port settings can be overwritten
+      in the target-dependent section.
+
+- Changed the dummy target-dependent section
+    - Added a dummy definition for svc_entry so that svc_table.o is linked.
+
+- Other changes
+    - Added a parameter (tstat) for passing the task state to make_wait, wait_wait_tmout,
+      wobj_make_wait, and wobj_make_wait_tmout, and changed the task state setting to be performed
+      within these functions.
+    - Renamed request_dispatch to request_dispatch_retint.
+    - Modified signal_time so that it now issues a message to the system log if no time events are processed.
+    - Added a mechanism (TargetTaskPrepare) to task.trb for adding target-dependent processing for each task.
+    - Added mechanisms (TargetCheckCfgInt, TargetCheckDefInh, TargetCheckCreIsr, TargetCheckDefExc)
+      to interrupt.trb and exception.trb for performing target-dependent error checking.
+    - Modified the time event heap to be a separate variable for each protection domain.
+    - Added TARGET_MEMATR_SSTACK to kernel_sym.def.
+    - Modified sample/Makefile to support parallel make.
+    - Modified so that the directory where intermediate object files are placed can be changed.
+    - Improved the test execution script (testexec.rb).
+    - Changed configurator error messages.
+
+●Other (Test Programs, Sample Programs, etc.)
+
+- Test Program Additions
+    - Added a test for service call invocation (test_calsvc).
+    - Added a test for inter-domain scheduling (test_sched1).
+    - Added a test for forced suspension (test_suspend1).
+    - Added a test for time partitioning (test_tprot5).
+    - Added a test for time window notification (test_twdnfy).
+    - Added a test for time window management (simt_twd1).
+
+- Test Program Changes
+    - Replaced the test program for high-resolution timer testing (hrt_systim?) with the test
+      program for the timer driver simulator (simt_systim?). Modified gentest.rb accordingly.
+    - Deleted unnecessary variable definitions in the cyclic handler in perf4.c.
+    - Changed the wait time in test_raster1.c.
+    - Changed test_tprot1 to also test get_did.
+    - Improved the test_tprot3 test method.
+    - Improved the test_twdnfy test.
+
+- Sample program changes
+    - Changed the loop for consuming processor time to write to a volatile variable. Moved the
+      processor time consumption to a separate function.
+    - Removed the use of PREPARE_RETURN_CPUEXC (it was being used incorrectly).
+    - Brushed up the code and comments.
+    - Corrected output messages.
+
+- Performance evaluation program changes
+    - Modified the program to stop when an error is returned from a service call.
+
+- Improved documentation and corrected comments.
+
+- Updated version numbers
+    - Updated the kernel and kernel specification version numbers.
+
+○ Target-dependent section revisions required (3.0.0 → 3.1.0)
+
+(1) Addressing changes to target-independent sections of the generation script
+    - If $cfgData[:CRE_DOM] is used in the target-dependent section of the generation script, 
+      change it to $domData.
+    - If $domData[domain][:stdrom] (before the previous revision, 
+      it was $cfgData[:CRE_DOM][domain][:stdrom]) is used in the target-dependent section 
+      of the generation script, change it to $standardMemreg[domain][:stdrom].
+      The same applies to $domData[domain][:stdram], [:stdsrom], and [:stdsram].
+    - If $commonStdrom is used in the target-dependent section of the generation script,
+      change it to $commonMemreg[:stdrom].
+    - Replace the parameter names in $cfgData and $memObj as follows
+      (if used in target-dependent sections). 
+      Also, remove the unnecessary unquotes for these parameters.
+    	$cfgData[:ATT_REG][key]		[:region]→[:regname]
+		$cfgData[:ATT_SEC][key]		[:section]→[:secname]
+		$cfgData[:ATT_SEC][key]		[:memreg]→[:regname]
+		$cfgData[:ATT_MOD][key]		[:module]→[:modname]
+		$memObj[key]				[:module]→[:modname]
+
+(2) Address changes to linker script generation method
+    - Change the generation script for pass 3 to always generate cfg3_out.ld, and the generation
+      script for pass 4 to always generate ldscript.ld.
+
+(3) Rename request_dispatch to request_dispatch_retint
+
+(4) Add the definition of CAL_SVC_1M_SYSTIM
+    - If you are using arch/gcc/tool_svc.h, add the definition of CAL_SVC_1M_SYSTIM by referring to
+      section "5.2.1 General Service Calls" in the porting guide.
+
+(5) Change the priority of the time window timer interrupt
+    - Set the priority of the time window timer interrupt to the same as the high-resolution timer interrupt.
+
+(6) Define $TARGET_LIBS
+    - In target_kernel.trb (or a file included from it), define the libraries that the compiler will
+      always use in $TARGET_LIBS.
+
+(7) Delete target_twdtimer_raise_int
+    - Delete target_twdtimer_raise_int, as it is no longer necessary.
+
+(8) Support for the new memory space synchronous write function
+    - Add the definition of the TOPPERS_SIL_WRITE_SYNC macro to target_sil.h
+      (or a file included from it). If this macro cannot be implemented,
+      define the TOPPERS_OMIT_SIL_SYNC_WRITE macro and add the definition 
+      of the memory space synchronous write function.
+
+(9) Support for changing the directory where intermediate object files are placed
+    - If START_OBJS, END_OBJS, or HIDDEN_OBJS are defined in the target-dependent part of the
+      Makefile, modify the definitions by referring to section "2.6 Linking Method Settings" 
+      in the Porting Guide. Note that these definitions use ":=" instead of "=".
+
+(10) Specify the check method for the starting address of the kernel memory pool area
+    - If supporting dynamically generated extension packages, define CHECK_MPK_ALIGN and
+      CHECK_MPK_NONNULL as necessary.
+
+(11) Address changes to the sample program.
+    - If necessary, review the values of LOOP_REF and TASK_LOOP.
+
+----------------------------------------------------------------------
+
+        TOPPERS/HRP3 Kernel
+        Major changes from Release 3.B.0 to 3.0.0
+
+List of Changes
+
+- Fixed a Missing Dispatch Bug
+    - Fixed a missing dispatch bug in ext_tsk, ena_dsp, and chg_ipm.
+    - Added the set_dspflg function, similar to the ASP3 kernel, to execute the previously suspended
+      system period switching and time window switching processes within it.
+
+- Added the ref_mem service call
+
+- Added the get_som service call
+
+- Changed the default access permission vector for kernel objects
+    - Changed the default access permission pattern for management operations.
+    - Added the ability to write ACV_DOM outside of a protection domain.
+
+- Eliminated LNK_SEC (merged with ATT_SEC)
+    - Registering a section with ATT_SEC, specifying TA_NOWRITE and TA_NOREAD without specifying
+      TA_EXEC, replaces LNK_SEC, eliminating the need for LNK_SEC.
+
+- Interrupt management function expansion
+    - Added three service calls: clr_int, ras_int, and prb_int.
+    - Expanded and streamlined the target-dependent specifications accordingly.
+
+- Fixed a bug in the ATT_SEC error check process
+    - Fixed a missing error check when ATT_MOD was not supported.
+
+- Fixed and improved the system period and time window switching process
+    - Fixed a missing process in ena_dsp and ext_tsk.
+    - Corrected the time window length (twdlen) type to PRCTIM.
+    - Introduced newscyc_twdswitch and twdtimer_enable.
+    - Replaced p_pending_runtwd with pending_twdswitch.
+    - Fixed a system period overrun check when executing a pending system period switching process.
+
+- Kernel implementation improvements
+    - Improved the ext_tsk implementation.
+
+- Streamlined generation processing for protection domain management functions
+    - Created a new file, domain_prep.trb, to separate preprocessing related to protection domain management functions.
+    - Streamlined the generation procedures in domain.trb, kernel.trb, and kernel_lib.trb.
+
+- Reviewed memory object integration and placement processing
+    - Introduced the concept of memory object access attributes to relax the conditions for memory
+      object integration. Reviewed the memory object placement order.
+    - Added standard short ROM and standard short RAM regions to standard memory regions, and added
+      the DEF_SRG parameter.
+    - Supported the case where the standard ROM and standard RAM regions are set to the same location.
+    - Modified the method for determining whether a memory object is empty.
+    - Narrowed the conditions for sharing the user stack area.
+    - Reviewed the labels for sections, memory objects, and memory protection units.
+    - Changed kernel_cfg.o, kernel_mem.o, and -lkernel to treat them with ATT_MOD at the end.
+    - Added a check for unexpected gaps between memory objects.
+    - Added a process to modify the aligned end address of the preceding memory object when removing
+      an empty merged memory object.
+    - Added a function to generate a temporary memory object initialization block in kernel_lib.trb,
+      and modified it to be called from kernel.trb and kernel_opt.trb.
+
+- Added new symbols defining standard memory object attributes
+    - Added new symbols (e.g., TA_TEXTSEC) defining standard memory object attributes, and
+      eliminated equivalent symbols (e.g., MEMATR_TEXT) defined in the target-dependent part of
+      the generation script.
+
+- Revised terminology, variable names, and label names.
+    - Changed the upper address limit to the aligned end address.
+    - Changed limit to aend or end.
+    - Changed prsv to noinit.
+
+- Revised linker script for GNU linker
+    - Addressed revisions to memory object integration and allocation processing.
+    - Changed the alignment specification method.
+
+- Redesigned idle processing (target-dependent portion only)
+    - Changed the design so that interrupts generated during idle processing do not return.
+
+- Added an interrupt request setting function (target-dependent portion only)
+    - Added a function (raise_int) to set interrupt requests in the target-dependent portion.
+    - Modified the RZ/A1 chip-dependent portion to use clear_int, probe_int, and raise_int.
+
+- Modified ARM core-dependent and target-dependent portions.
+    - Modified the time window timer processing, which was previously called when p_runtwd was
+      not NULL, to be called when twdtimer_enable was true.
+    - Modified the stack pointer to be aligned on an 8-byte boundary.
+    - Fixed a bug in the cache invalidation code and expanded it to invalidate all levels of cache.
+    - Modified sil_dly_nse to handle cases where branch prediction is enabled.
+    - Added a dummy TargetCalcMeminibSize function to core_kernel.trb and core_opt.trb.
+    - Modified the process to prevent unnecessary E_SYS errors from being generated during memory
+      protection unit error checks.
+    - A constant value for MMU page table configuration is no longer referred to as the APX bit; it
+      is now treated as three AP bits.
+    - Modified the GIC target-dependent portion to support clr_int, ras_int, and prb_int. At the
+      same time, extended raise_int to support software-generated interrupts (SGI).
+    - Modified the GIC target-dependent portion to no longer write to the interrupt configuration
+      registers that support SGI.
+    - Implemented a fix for GIC Errata 390. - Stopped renaming current_cpsr/set_cpsr in
+      core_rename.def.
+    - Added target-dependent sections for GR-PEACH and chip-dependent sections for the RZ/A1 series.
+    - Fixed an issue where the timer implementation in the MPCore chip-dependent section was unable
+      to handle high frequencies.
+    - Removed the setting for execution on cores other than core 0 in the target-dependent section
+      for CT11MPcore. Removed "#ifdef CORE0" in the MPCORE-dependent section.
+    - Fixed the timer module in the target-dependent section for CT11MPcore to not set the load
+      register to 0 when running in QEMU.
+
+- Configurator fixes
+    - Improved the method for passing data between paths
+      (introduced $globalVars and eliminated $cfg2Data and $cfg3Data).
+    - Added a function to the value-retrieval symbol table to retrieve data using a NumStr class object.
+    - Added pointer integer constant expression parameters.
+    - Fixed the check to determine whether an object belongs to the kernel domain.
+    - Fixed the error message for objects that do not belong to a protection domain.
+    - Fixed pass 2 to detect misdefined SIL_ENDIAN_BIT/LITTLE.
+
+- Implemented TECS
+    - Implemented modified ASP3 kernel system services.
+    - Changed the directory to arch/tracelog to accommodate the TECS conversion of the trace log
+      recording sample code.
+    - Added the prb_str library.
+
+- Improved system log function
+    - Modified to match the latest system log function of the ASP3 kernel.
+
+- Added test programs
+    - Added a test for terminating the current task (test_exttsk).
+    - Added an event flag function test (1) (test_flg1).
+    - Added a data queue function test (1) (test_dtq1).
+    - Added an interrupt management function test (1) (test_int1).
+    - Added a prb_str test (test_prbstr).
+
+- Test program modifications
+    - Time parameters were written using TEST_TIME_CP and TEST_TIME_PROC.
+    - Improved tests related to time partitioning.
+    - Adjusted the wait time for test (2) (test_raster2) related to the task termination request function.
+
+- Changed the offset file generation method
+    - Modified the offset file generation script to make it easier to understand the contents of the
+      generated file.
+    - Changed offset.h to be generated if TARGET_OFFSET_TRB is defined, and eliminated OMIT_OFFSET_H.
+    - Removed the magic number check in the offset file generation script
+      (because the check content overlapped with that of the configurator).
+
+- Makefile modifications
+    - Added a linker script file to the dependency list for each link step.
+    - Changed the compiler -T option to -Wl,-T.
+    - Added the ability to override the GCC_TARGET definition in Makefile.core.
+    - Moved the addition of the -DUSE_CFG_PASS3 option to the target-independent section.
+    - Moved the definitions of LDSCRIPT, CFG2_OUT_LDSCRIPT, and CFG3_OUT_LDSCRIPT to the
+      target-independent section.
+
+- Sample program modifications
+    - Modified to enable interrupt operation checks (target-dependent).
+    - Modified to use processor time with the 'V' command.
+    - Removed the optional kernel self-diagnostics function.
+
+- Added a dummy target-dependent section (target/dummy_gcc).
+
+- Other modifications
+    - Changed the data type when allocating message buffer management space from uint_t to MB_T.
+    - Changed the label declaration/reference method in kernel_mem.c.
+    - Modified to use the configurator's new functionality (obtaining values ​​as NumStr class
+      objects, and cfg1_out.c as uintptr_t types).
+    - Added a statement to each ruby ​​script to set the external encoding to UTF-8.
+    - Improved the definition of offsetof.
+    - Removed the CAST macro definition from kernel_impl.h.
+    - Renamed the p_schedtcb field in the scheduling unit management block to p_predtsk.
+    - Modified to output '\007' when a test results in an error.
+    - Changed the linking method for libkernel.a.
+    - Modified gentest.rb to handle ISRs and interrupt handlers.
+    - Changed the rename definition generation rule for genrename.rb.
+    - Improved gentest.rb.
+
+- Improved documentation and corrected comments.
+
+- Updated the version number.
+    - Updated the kernel version number.
+    - Corrected the copyright year in the banner.
+
+----------------------------------------------------------------------
+
+        TOPPERS/HRP3 Kernel
+        Major changes from Release 2.2.1 to 3.B.0
+
+List of Major Changes
+
+Note: The following list of changes only includes the major changes and is not comprehensive.
+
+- Feature Additions/Deletions
+    - Added time partitioning functionality.
+    - Removed task exception handling functionality and added task termination request functionality.
+    - Removed the wait-disabled state and its manipulation functionality.
+    - Added message buffer functionality to the standard package.
+    - Expanded the cyclic handler and alarm handler functionality to cyclic notification and alarm
+      notification functionality.
+    - Added system time adjustment and setting functions.
+    - Removed the overrun handler functionality from the standard package.
+    - Added a task that does not queue startup requests.
+    - Added a function to view task and scheduling status.
+    - Supports manual memory allocation.
+
+- Added/Deleted Extension Packages
+    - Removed the message buffer extension package (replaced in the standard package).
+    - The dynamic generation extension package is not currently supported.
+    - The overrun handler extension package is not currently supported.
+
+- Specification Changes
+    - Changed the SIZE type to size_t.
+    - Changed the time unit for system time, relative time, and timeout time to microseconds.
+      Changed the size of system time to 64 bits. Defined the size of relative time and timeout time
+      as 32 bits. Changed the timeout time to an unsigned integer type.
+    - Eliminated non-task context-specific service calls whose names begin with "i." Now service
+      calls with the same names as task contexts can be invoked from non-task contexts.
+    - Made the stk in CRE_TSK, dtqmb in CRE_DTQ, pdqmb in CRE_PDQ, mbfmb in CRE_MBF, mpf and mpfmb
+      in CRE_MPF, and istk in DEF_ICS optional.
+    - Mutexes must be unlocked in the reverse order of their locking.
+    - Replaced TA_MEMPRSV with TA_MEMZERO, reversing its meaning.
+    - dis_int and ena_int can now be called from non-task contexts.
+    - ATA_YYY functionality has been integrated into ATT_YYY, and ATA_YYY has been abolished.
+    - ATT_ISR has been abolished and CRE_ISR has been added.
+    - get_utm has been abolished and fch_hrt has been added.
+    - Changed the handling of interrupt priority masks when interrupt service routines and time
+      event handlers start and return.
+
+- Made time event processing tickless
+    - Completely revised the time event processing module.
+
+- Changed scheduler implementation
+    - Changed the idle processing implementation method (mainly target-dependent parts).
+    - Abolished reqflg and ipmflg. Changed disdsp to enadsp.
+    - Scheduler functions no longer return the dispatch requirement.
+    - Changed the meaning of p_schedtsk from the highest priority task to the task that should be
+      executed (handling is different when dispatch is pending).
+
+- Makefile modifications
+    - Modified dependency files to generate them using the GCC -MD option.
+    - Reorganized variables (renamed, added, removed, etc.).
+
+- Implemented a Ruby configurator
+    - Replaced template files with generation scripts written in Ruby.
+    - Renamed kernel_api.csv to kernel_api.def and changed the format.
+    - Renamed kernel_def.csv to kernel_sym.def and changed the format.
+
+- Rubyized utilities
+    - Ported the configuration script (configure) and five utility programs from Perl to Ruby.
+
+- Other implementation changes
+    - Divided the generation script (template file) into functional modules.
+    - Changed the static error checking method (CHECK macro configuration).
+    - Changed the parameters of the service call exit log macro.
+    - The separate lock_cpu, unlock_cpu, and sense_lock functions for task and non-task contexts
+      have been removed.
+    - Introduced lock_cpu_dsp and unlock_cpu_dsp as functions for transitioning to and returning
+      from a CPU locked state when task dispatching is possible.
+    - Modified to call request_dispatch when task switching is necessary in a non-task context
+      (compatible with ARM Cortex-M).
+    - Modified to call delay_for_interrupt as a function to enable interrupt acceptance when
+      temporarily releasing the CPU locked state.
+    - Modified to store a pointer to DOMINIB in the TCB.
+    - Modified the way wait states are represented in the TCB.
+    - Shared use of waiptn and flgptn in WINFO_FLG (eliminated flgptn).
+    - Modified to distinguish between WINFO_SDTQ/SPDQ and WINFO_RDTQ/RPDQ.
+    - Changed the representation of positions in the time event heap from indexes to pointers.
+
+- Changed the occurrence time of a time event to be stored within the time event block.
+
+- Renamed the OVRTIM type to the PRCTIM type.
+    - Removed TOPPERS_LABEL_ASM.
+    - Changed the configuration method for extended service calls.
+
+- Changed the specifications of the configuration script (configure.rb)
+
+- Added sample program functionality
+
+- Added test programs
+
+- Updated the version number
+    - Updated the kernel version number.
+
+----------------------------------------------------------------------

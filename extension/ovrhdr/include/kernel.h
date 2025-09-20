@@ -363,24 +363,24 @@ typedef struct t_rmem {
 #define TPM_EXEC		UINT_C(0x04)	/* 実行アクセス権のチェック */
 
 /*
- *  通知処理モードの定義
+ *  Defining the notification processing mode
  */
-#define TNFY_HANDLER	UINT_C(0x00)		/* タイムイベントハンドラの呼出し */
-#define TNFY_SETVAR		UINT_C(0x01)		/* 変数の設定 */
-#define TNFY_INCVAR		UINT_C(0x02)		/* 変数のインクリメント */
-#define TNFY_ACTTSK		UINT_C(0x03)		/* タスクの起動 */
-#define TNFY_WUPTSK		UINT_C(0x04)		/* タスクの起床 */
-#define TNFY_SIGSEM		UINT_C(0x05)		/* セマフォの資源の返却 */
-#define TNFY_SETFLG		UINT_C(0x06)		/* イベントフラグのセット */
-#define TNFY_SNDDTQ		UINT_C(0x07)		/* データキューへの送信 */
+#define TNFY_HANDLER	UINT_C(0x00)		/* Call time event handler */
+#define TNFY_SETVAR		UINT_C(0x01)		/* Set variable */
+#define TNFY_INCVAR		UINT_C(0x02)		/* Increment variable */
+#define TNFY_ACTTSK		UINT_C(0x03)		/* Start task */
+#define TNFY_WUPTSK		UINT_C(0x04)		/* Wake up task */
+#define TNFY_SIGSEM		UINT_C(0x05)		/* Return semaphore resource */
+#define TNFY_SETFLG		UINT_C(0x06)		/* Set event flag */
+#define TNFY_SNDDTQ		UINT_C(0x07)		/* Send to data queue */
 
-#define TENFY_SETVAR	UINT_C(0x10)		/* 変数の設定 */
-#define TENFY_INCVAR	UINT_C(0x20)		/* 変数のインクリメント */
-#define TENFY_ACTTSK	UINT_C(0x30)		/* タスクの起動 */
-#define TENFY_WUPTSK	UINT_C(0x40)		/* タスクの起床 */
-#define TENFY_SIGSEM	UINT_C(0x50)		/* セマフォの返却 */
-#define TENFY_SETFLG	UINT_C(0x60)		/* イベントフラグのセット */
-#define TENFY_SNDDTQ	UINT_C(0x70)		/* データキューへの送信 */
+#define TENFY_SETVAR	UINT_C(0x10)		/* Set variable */
+#define TENFY_INCVAR	UINT_C(0x20)		/* Increment variable */
+#define TENFY_ACTTSK	UINT_C(0x30)		/* Start task */
+#define TENFY_WUPTSK	UINT_C(0x40)		/* Wake up task */
+#define TENFY_SIGSEM	UINT_C(0x50)		/* Return semaphore resource */
+#define TENFY_SETFLG	UINT_C(0x60)		/* Set event flag */
+#define TENFY_SNDDTQ	UINT_C(0x70)		/* Send to data queue */
 
 /*
  *  オブジェクトの状態の定義
